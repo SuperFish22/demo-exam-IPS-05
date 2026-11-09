@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Практика · Подготовка к ДЭ</title>
+<meta name="description" content="Материалы для подготовки к демоэкзамену 09.02.07 «Программист»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="index.html">ДЭ <span>09.02.07</span></a>
+  <nav class="top" aria-label="Разделы"><a href="index.html">Главная</a><a href="enterprise.html">Предприятие</a><a href="er.html">ER-диаграмма</a><a href="sql.html">SQL</a><a href="wpf.html">C# и WPF</a><a href="integration.html">Интеграция и API</a><a href="variants.html">Варианты</a><a href="practice.html" aria-current="page">Практика</a><a href="checklist.html">Чек-лист</a></nav>
+</div></header>
+<main>
+<section>
+  <h1>Практика: шесть предприятий</h1>
+  <p class="lead">Пакеты документов в том же формате, что на экзамене: заказ покупателя, спецификация, заказ на производство, цены, расчёт стоимости и Заказчики.json. Все предприятия вымышлены.</p>
+</section>
+
+<section class="card" id="how">
+  <h2>Что делать с каждым пакетом</h2>
+  <div class="step"><div class="num">1</div><div><b>Детектив.</b> Найдите противоречия и грязные данные. В каждом пакете их 4–6, как в настоящем задании.</div></div>
+  <div class="step"><div class="num">2</div><div><b>ER-диаграмма.</b> По <a href="er.html#algo">алгоритму из 6 шагов</a>, экспорт в PDF.</div></div>
+  <div class="step"><div class="num">3</div><div><b>База данных.</b> Таблицы в PostgreSQL и <a href="sql.html#import">импорт Заказчики.json</a>. Подумайте, что делать с ошибками в JSON.</div></div>
+  <div class="step"><div class="num">4</div><div><b>Запрос.</b> Стоимость материалов для заказа покупателя № 1 по ценам из файла «Цены». Сверьтесь с проверочным числом.</div></div>
+  <p class="small">Таймер как на экзамене: шаги 2–4 за 60 минут.</p>
+  <h3>Как распределить 60 минут</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Минуты</th><th>Что делать</th><th>Зачем именно так</th></tr></thead>
+    <tbody>
+      <tr><td>0–10</td><td>Прочитать все документы, выписать сущности и связи на черновик</td><td>Десять минут чтения экономят полчаса переделок. Кто сразу рисует, потом стирает.</td></tr>
+      <tr><td>10–25</td><td>Нарисовать ER, проверить 3НФ и имена, экспортировать PDF</td><td>Сразу в PDF, чтобы не остаться без диаграммы, если время кончится.</td></tr>
+      <tr><td>25–45</td><td>Скрипт создания таблиц, заполнение справочников, импорт JSON</td><td>Скрипт лучше писать в файле, а не кликать в pgAdmin: его можно перезапустить после ошибки.</td></tr>
+      <tr><td>45–55</td><td>Запрос стоимости, сверка с ручным расчётом</td><td>Посчитайте на калькуляторе хотя бы одну строку, чтобы поймать ошибку в единицах.</td></tr>
+      <tr><td>55–60</td><td>Сохранить скрипты в database/, проверить имена файлов</td><td>Несохранённая работа не оценивается.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="card" id="cases">
+  <h2>Пакеты</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Предприятие</th><th>Что производит</th><th>Сложность</th><th class="n">Проверочное число, ₽</th><th>Скачать</th></tr></thead>
+    <tbody>
+      <tr><td>ООО «ДревоДом»</td><td>Табурет «Классик»</td><td>одно изделие</td><td class="n">3 498,00</td><td><a href="materials/case1.zip" download>case1.zip</a></td></tr>
+      <tr><td>ООО «Сладкий край»</td><td>Торт «Медовик»</td><td>одно изделие</td><td class="n">3 744,12*</td><td><a href="materials/case2.zip" download>case2.zip</a></td></tr>
+      <tr><td>ООО «ТеплоСтрой»</td><td>Мангал «Пикник»</td><td>одно изделие</td><td class="n">9 638,00</td><td><a href="materials/case3.zip" download>case3.zip</a></td></tr>
+      <tr><td>ООО «Стежок»</td><td>Куртка и жилет</td><td>два изделия, общие материалы</td><td class="n">28 980,00</td><td><a href="materials/case4.zip" download>case4.zip</a></td></tr>
+      <tr><td>ООО «ЭкоБокс»</td><td>Коробка и лоток</td><td>нормы на 1 000 шт</td><td class="n">249 223,00</td><td><a href="materials/case5.zip" download>case5.zip</a></td></tr>
+      <tr><td>ООО «ЛайтТех»</td><td>Два светильника</td><td>два изделия, общие материалы</td><td class="n">77 119,20</td><td><a href="materials/case6.zip" download>case6.zip</a></td></tr>
+    </tbody>
+  </table></div>
+  <p class="small">Проверочное число — стоимость материалов на заказ покупателя № 1 из пакета: потребность по спецификации × цена из файла «Цены». * В «Сладком крае» одной цены нет в прайсе. Найдите её в другом документе и зафиксируйте это как допущение.</p>
+</section>
+
+<section class="card" id="hints">
+  <h2>Подсказки, если застряли</h2>
+  <details><summary>С чего начать детектив</summary>
+    <p>Сравните одно и то же в разных документах: код изделия, единицы измерения, наименование заказчика. Пересчитайте суммы на калькуляторе. В JSON проверьте длину ИНН (у юрлица 10 цифр, у ИП 12), уникальность id и одинаковость написания типа контрагента.</p>
+  </details>
+  <details><summary>Два изделия используют один материал</summary>
+    <p>Норма хранится в строке спецификации, а не в карточке материала. В заказе на производство потребность одного материала по всем изделиям складывается в одну строку. В SQL это <code>GROUP BY</code> по материалу.</p>
+  </details>
+  <details><summary>Продукция в тысячах штук</summary>
+    <p>Если изделие учитывается в тыс. шт, норма в спецификации дана на 1 000 изделий. Тогда количество в заказе тоже в тысячах, и умножать нужно на него, а не на штуки.</p>
+  </details>
+  <details><summary>Один контрагент и покупатель, и поставщик</summary>
+    <p>Ссылка на один тип не подойдёт. Варианты: два флага <code>is_buyer</code> и <code>is_supplier</code> или связующая таблица «контрагент — тип».</p>
+  </details>
+</section>
+</main>
+<footer>Учебный сайт для подготовки к демоэкзамену. Все предприятия и данные в примерах вымышлены.</footer>
+<script src="assets/app.js"></script>
+
+</body>
+</html>

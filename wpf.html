@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C# и WPF · Подготовка к ДЭ</title>
+<meta name="description" content="Материалы для подготовки к демоэкзамену 09.02.07 «Программист»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="index.html">ДЭ <span>09.02.07</span></a>
+  <nav class="top" aria-label="Разделы"><a href="index.html">Главная</a><a href="enterprise.html">Предприятие</a><a href="er.html">ER-диаграмма</a><a href="sql.html">SQL</a><a href="wpf.html" aria-current="page">C# и WPF</a><a href="integration.html">Интеграция и API</a><a href="variants.html">Варианты</a><a href="practice.html">Практика</a><a href="checklist.html">Чек-лист</a></nav>
+</div></header>
+<main>
+<section>
+  <h1>C# и WPF: приложение для предприятия</h1>
+  <p class="lead">C# вы уже знаете. WPF добавляет окна: внешний вид описывается в XAML, поведение пишется на C# в code-behind. Ниже всё, что нужно для модуля 4.</p>
+</section>
+
+<section class="card" id="idea">
+  <h2>Чем оконное приложение отличается от консольного</h2>
+  <div class="prose">
+    <p>Консольная программа, которую вы писали раньше, идёт сверху вниз: спросила число, посчитала, вывела, закончилась. Программа сама решает, что происходит дальше.</p>
+    <p>Оконное приложение устроено наоборот. Оно рисует окно и <b>ждёт</b>. Что делать, решает пользователь: нажал кнопку — выполнился метод этой кнопки, выбрал строку в таблице — выполнился другой метод. Такие методы называют обработчиками событий. Вся ваша логика живёт в них.</p>
+  </div>
+  <div class="note analogy"><b>Аналогия: веб-страница</b>
+    <p>Если вы делали сайты, WPF покажется знакомым. XAML — это как HTML: описывает, какие элементы на экране и где они стоят. Code-behind на C# — как JavaScript: что происходит при нажатии. Связь между ними — имя элемента (<code>x:Name</code>) и имя обработчика (<code>Click="..."</code>).</p>
+  </div>
+</section>
+
+<section class="card" id="basics">
+  <h2>WPF за 10 минут</h2>
+  <div class="grid">
+    <div class="box"><h3>Окно</h3><p><code>MainWindow.xaml</code> — разметка, <code>MainWindow.xaml.cs</code> — код. Обязательно задайте <code>Title</code>, <code>MinWidth</code> и <code>MinHeight</code>.</p></div>
+    <div class="box"><h3>Разметка</h3><p><code>Grid</code> со строками и столбцами. Размер <code>*</code> растягивается вместе с окном, <code>Auto</code> занимает сколько нужно.</p></div>
+    <div class="box"><h3>Элементы</h3><p><code>TextBox</code>, <code>PasswordBox</code>, <code>ComboBox</code>, <code>DataGrid</code>, <code>Button</code>. Имя элемента задаёт <code>x:Name</code>.</p></div>
+    <div class="box"><h3>События</h3><p><code>Click="LoginButton_Click"</code> в XAML связывает кнопку с методом в code-behind.</p></div>
+  </div>
+<pre><code>&lt;Window x:Class="Vershina.Production.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Вершина — вход в систему"
+        Width="420" Height="520" MinWidth="380" MinHeight="480"
+        WindowStartupLocation="CenterScreen"&gt;
+    &lt;Grid Margin="20"&gt;
+        &lt;Grid.RowDefinitions&gt;
+            &lt;RowDefinition Height="Auto"/&gt;
+            &lt;RowDefinition Height="Auto"/&gt;
+            &lt;RowDefinition Height="*"/&gt;
+            &lt;RowDefinition Height="Auto"/&gt;
+        &lt;/Grid.RowDefinitions&gt;
+
+        &lt;StackPanel Grid.Row="0"&gt;
+            &lt;Label Content="Логин" Target="{Binding ElementName=LoginTextBox}"/&gt;
+            &lt;TextBox x:Name="LoginTextBox" TabIndex="0"/&gt;
+        &lt;/StackPanel&gt;
+
+        &lt;StackPanel Grid.Row="1" Margin="0,10,0,0"&gt;
+            &lt;Label Content="Пароль" Target="{Binding ElementName=PasswordBox}"/&gt;
+            &lt;PasswordBox x:Name="PasswordBox" TabIndex="1"/&gt;
+        &lt;/StackPanel&gt;
+
+        &lt;!-- Сюда кладём сетку 2×2 с фрагментами капчи --&gt;
+        &lt;UniformGrid x:Name="CaptchaGrid" Grid.Row="2" Rows="2" Columns="2" Margin="0,16"/&gt;
+
+        &lt;Button x:Name="LoginButton" Grid.Row="3" Content="Войти"
+                TabIndex="2" IsDefault="True" Click="LoginButton_Click"/&gt;
+    &lt;/Grid&gt;
+&lt;/Window&gt;</code></pre>
+  <h3>Что здесь происходит</h3>
+  <ul class="prose">
+    <li><b><code>Grid.RowDefinitions</code></b> делит окно на четыре строки, как таблицу. Каждый элемент указывает, в какой строке стоит: <code>Grid.Row="1"</code>.</li>
+    <li><b><code>Height="Auto"</code></b> — строка высотой ровно под содержимое. <b><code>Height="*"</code></b> — «всё оставшееся место». Когда пользователь растягивает окно, растёт только строка со звёздочкой, и капча получает больше места, а поля ввода остаются аккуратными.</li>
+    <li><b><code>StackPanel</code></b> ставит элементы друг под другом: подпись, под ней поле.</li>
+    <li><b><code>Label Target=...</code></b> связывает подпись с полем: щелчок по подписи ставит курсор в поле. Мелочь, но это признак аккуратного интерфейса.</li>
+    <li><b><code>TabIndex</code></b> задаёт порядок перехода по клавише Tab. <b><code>IsDefault="True"</code></b> — кнопка нажимается клавишей Enter.</li>
+    <li><b><code>Click="LoginButton_Click"</code></b> — при нажатии вызвать метод с таким именем в <code>LoginWindow.xaml.cs</code>. Visual Studio создаст заготовку метода, если дважды щёлкнуть по кнопке в конструкторе.</li>
+  </ul>
+  <h3>Как открыть другое окно</h3>
+<pre><code>var adminWindow = new AdminWindow();
+adminWindow.Show();   // открыть новое окно
+Close();              // закрыть текущее окно входа</code></pre>
+  <p class="small">Стартовое окно задаётся в <code>App.xaml</code> атрибутом <code>StartupUri="Views/LoginWindow.xaml"</code>.</p>
+</section>
+
+<section class="card" id="structure">
+  <h2>Структура проекта и имена</h2>
+  <div class="grid">
+    <div class="box">
+<pre><code>Vershina.Production/
+├── Views/       окна (LoginWindow, AdminWindow)
+├── Models/      классы сущностей (User, Counterparty)
+├── Services/    логика (AuthService, CaptchaService)
+├── Data/        работа с БД (Database, UserRepository)
+└── Resources/   картинки капчи, шаблоны</code></pre>
+    </div>
+    <div class="box">
+      <ul>
+        <li>Название приложения содержит имя заказчика: <code>Vershina.Production</code>.</li>
+        <li>Классы и методы: <code>PascalCase</code>. Локальные переменные: <code>camelCase</code>. Приватные поля: <code>camelCase</code> или <code>_camelCase</code>, но одинаково во всём проекте.</li>
+        <li>Элементы называем по смыслу: <code>LoginTextBox</code>, а не <code>textBox1</code>.</li>
+        <li>Одна команда в строке. Закомментированного кода быть не должно.</li>
+        <li>Комментарии только там, где неочевидно, и объясняют зачем, а не что.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="messages">
+  <h2>Три вида сообщений</h2>
+  <p class="prose">«Автотест» проверяет, что в приложении есть сообщения трёх типов с правильным заголовком и значком. Нажмите кнопки, чтобы увидеть, как они выглядят.</p>
+  <div class="row">
+    <button class="btn" type="button" onclick="msgBox('error','Ошибка подключения','Не удалось подключиться к базе данных. Проверьте, что сервер PostgreSQL запущен, и повторите попытку.')">Ошибка</button>
+    <button class="btn" type="button" onclick="msgBox('warning','Не заполнены поля','Введите логин и пароль, затем нажмите «Войти».')">Предупреждение</button>
+    <button class="btn" type="button" onclick="msgBox('info','Готово','Пользователь ivanov добавлен.')">Информация</button>
+  </div>
+<pre><code>MessageBox.Show(
+    "Не удалось подключиться к базе данных. Проверьте, что сервер PostgreSQL запущен, и повторите попытку.",
+    "Ошибка подключения",
+    MessageBoxButton.OK,
+    MessageBoxImage.Error);       // Warning — предупреждение, Information — информация</code></pre>
+</section>
+
+<section class="card" id="db">
+  <h2>Подключение к PostgreSQL через Npgsql</h2>
+  <p class="prose">Сама по себе программа на C# не умеет разговаривать с PostgreSQL. Для этого есть библиотека Npgsql. Установка: правой кнопкой по проекту → «Управление пакетами NuGet» → вкладка «Обзор» → найти Npgsql → «Установить».</p>
+  <div class="note analogy"><b>Аналогия: телефонный звонок</b>
+    <p><b>Connection</b> — позвонить в базу (набрать адрес, логин, пароль). <b>Command</b> — то, что вы говорите: текст SQL-запроса. <b>Reader</b> — слушать ответ построчно. Положить трубку обязательно, иначе база будет держать линию занятой. За это отвечает <code>await using</code>: соединение закроется само, когда метод закончится, даже если внутри случилась ошибка.</p>
+  </div>
+  <h3>Зачем async и await</h3>
+  <p class="prose">Запрос к базе идёт по сети и может занять секунду. Если ждать ответа «в лоб», окно на это время замрёт: не нажимается, не двигается, Windows пишет «Не отвечает». С <code>await</code> программа отпускает окно, пока ждёт ответ, а потом продолжает с того же места. Правило простое: метод, внутри которого есть <code>await</code>, помечается <code>async</code> и возвращает <code>Task</code>; обработчик кнопки — единственное место, где допустимо <code>async void</code>.</p>
+  <h3>Почему только параметры</h3>
+  <p class="prose">Представьте, что запрос собран склейкой строк: <code>"SELECT * FROM users WHERE login = '" + login + "'"</code>. Пользователь вводит в поле логина <code>' OR '1'='1</code>. Получится <code>WHERE login = '' OR '1'='1'</code>, а это условие истинно для всех строк. Это SQL-инъекция. С параметром <code>@login</code> Npgsql передаёт значение отдельно от текста запроса, и всё, что ввёл пользователь, остаётся просто текстом.</p>
+<pre><code>using Npgsql;
+
+namespace Vershina.Production.Data;
+
+public static class Database
+{
+    public const string ConnectionString =
+        "Host=localhost;Port=5432;Database=vershina;Username=postgres;Password=postgres";
+}
+
+public sealed class UserRepository
+{
+    public async Task&lt;User?&gt; FindByLoginAsync(string login)
+    {
+        await using var connection = new NpgsqlConnection(Database.ConnectionString);
+        await connection.OpenAsync();
+
+        const string sql = """
+            SELECT u.id, u.login, u.password, r.name, u.is_blocked, u.failed_attempts
+            FROM users AS u
+            JOIN roles AS r ON r.id = u.role_id
+            WHERE u.login = @login
+            """;
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@login", login);
+
+        await using var reader = await command.ExecuteReaderAsync();
+        if (!await reader.ReadAsync())
+        {
+            return null;
+        }
+
+        return new User
+        {
+            Id = reader.GetInt32(0),
+            Login = reader.GetString(1),
+            Password = reader.GetString(2),
+            Role = reader.GetString(3),
+            IsBlocked = reader.GetBoolean(4),
+            FailedAttempts = reader.GetInt32(5)
+        };
+    }
+
+    public async Task RegisterFailedAttemptAsync(int userId)
+    {
+        await using var connection = new NpgsqlConnection(Database.ConnectionString);
+        await connection.OpenAsync();
+
+        // Третья ошибка подряд сразу блокирует учётную запись
+        const string sql = """
+            UPDATE users
+            SET failed_attempts = failed_attempts + 1,
+                is_blocked = (failed_attempts + 1 &gt;= 3)
+            WHERE id = @id
+            """;
+        await using var command = new NpgsqlCommand(sql, connection);
+        command.Parameters.AddWithValue("@id", userId);
+        await command.ExecuteNonQueryAsync();
+    }
+}</code></pre>
+</section>
+
+<section class="card" id="login">
+  <h2>Модуль 4: требования к входу</h2>
+  <p class="prose">Окно входа — самая проверяемая часть модуля 4. Эксперт будет специально ошибаться, собирать пазл неправильно, входить заблокированным пользователем. Поэтому важно понимать логику, а не только скопировать код.</p>
+  <ul class="prose">
+    <li>Поля «Логин» и «Пароль» обязательны, кнопка «Войти».</li>
+    <li>Неверные данные: <b>«Вы ввели неверный логин или пароль. Пожалуйста проверьте ещё раз введенные данные»</b>.</li>
+    <li>Успешный вход: <b>«Вы успешно авторизовались»</b>.</li>
+    <li>Капча: собрать картинку из фрагментов. Неверно собранный пазл тоже считается ошибкой.</li>
+    <li>Три ошибки подряд (пароль или пазл) блокируют учётную запись: <b>«Вы заблокированы. Обратитесь к администратору»</b>.</li>
+    <li>Администратор попадает в окно управления пользователями, пользователь — в своё окно.</li>
+  </ul>
+  <p class="small">Тексты сообщений копируйте из задания дословно, включая отсутствие запятой после «Пожалуйста».</p>
+  <h3>Порядок проверок и почему он такой</h3>
+  <ol class="walk">
+    <li><b>Поля заполнены?</b> Если нет, не тратим запрос к базе и не считаем попытку: пользователь просто забыл ввести. Предупреждение.</li>
+    <li><b>Пользователь с таким логином существует?</b> Если нет, показываем общее сообщение «неверный логин или пароль». Не пишем «нет такого логина», иначе злоумышленник узнает, какие логины есть.</li>
+    <li><b>Пользователь заблокирован?</b> Проверяем <b>до</b> пароля. Иначе заблокированный, подбирая пароль, мог бы узнать, что угадал.</li>
+    <li><b>Пазл собран и пароль верный?</b> Если что-то не так, увеличиваем счётчик в базе. На третьей ошибке подряд ставим блокировку. Пазл перемешиваем заново.</li>
+    <li><b>Всё верно.</b> Сбрасываем счётчик в ноль (иначе две старые ошибки плюс одна новая через неделю дали бы блокировку), сообщаем об успехе и открываем окно по роли.</li>
+  </ol>
+  <div class="note"><b>Где хранить счётчик ошибок</b>
+    <p>В базе, в поле <code>failed_attempts</code>, а не в переменной программы. Если хранить в переменной, достаточно перезапустить приложение, и счётчик обнулится. Требование «блокировать после трёх попыток» тогда легко обойти.</p>
+  </div>
+</section>
+
+<section class="card" id="sim">
+  <h2>Симулятор окна входа</h2>
+  <p class="prose">Логика как в настоящем приложении. Учётные записи: <code>admin / admin</code> и <code>user / user</code>. Соберите пазл, меняя фрагменты местами: щёлкните по одному, потом по другому. Попробуйте ошибиться три раза, потом разблокируйте пользователя кнопкой в таблице. Следите за журналом справа: он показывает, что программа делает с базой на каждом шаге.</p>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(340px,1fr))">
+    <div class="win">
+      <div class="bar"><span>Вершина — вход в систему</span><span>— ▢ ×</span></div>
+      <div class="body">
+        <label class="f">Логин<input type="text" id="simLogin" autocomplete="off"></label>
+        <label class="f">Пароль<input type="password" id="simPass" autocomplete="off"></label>
+        <div>
+          <div class="small" style="margin-bottom:4px">Соберите картинку</div>
+          <div class="puzzle" id="simPuzzle"></div>
+        </div>
+        <div class="row"><button class="btn" type="button" id="simBtn">Войти</button><button class="btn ghost" type="button" id="simShuffle">Перемешать</button></div>
+      </div>
+    </div>
+    <div class="box">
+      <h3>Таблица users (как в БД)</h3>
+      <div class="tw"><table id="simUsers"><thead><tr><th>login</th><th>role</th><th class="n">failed_attempts</th><th>is_blocked</th><th></th></tr></thead><tbody></tbody></table></div>
+      <p class="small">Кнопка «Разблокировать» — то, что делает администратор в своём окне: <code>is_blocked = false</code> и <code>failed_attempts = 0</code> одновременно.</p>
+      <h3>Журнал</h3>
+      <ol id="simLog" class="small" style="max-height:180px;overflow:auto"></ol>
+    </div>
+  </div>
+  <h3>Как устроен пазл внутри</h3>
+  <p class="prose">Картинку заранее режут на 4 части: <code>1.png</code>… <code>4.png</code>. Программа хранит массив из четырёх чисел: какой фрагмент сейчас лежит в каждой ячейке. Собранный пазл — это массив <code>{0, 1, 2, 3}</code>: в ячейке 0 фрагмент 0, в ячейке 1 фрагмент 1 и так далее. Перемешать — переставить числа в массиве. Поменять два фрагмента — обменять два числа местами. Проверить — сравнить массив с <code>{0, 1, 2, 3}</code>. Картинки на экране просто перерисовываются по массиву.</p>
+  <details><summary>Код капчи-пазла на C#</summary>
+<pre><code>// order[i] — номер фрагмента, который сейчас лежит в ячейке i
+private int[] order = { 0, 1, 2, 3 };
+private int? firstSelectedCell;
+
+private void ShufflePieces()
+{
+    var random = new Random();
+    // Перемешиваем, пока не получится порядок, отличный от собранного
+    do
+    {
+        order = order.OrderBy(_ =&gt; random.Next()).ToArray();
+    }
+    while (IsPuzzleSolved());
+    RenderPieces();
+}
+
+private void OnPieceClick(int cellIndex)
+{
+    if (firstSelectedCell is null)
+    {
+        firstSelectedCell = cellIndex;
+        return;
+    }
+
+    int first = firstSelectedCell.Value;
+    (order[first], order[cellIndex]) = (order[cellIndex], order[first]);
+    firstSelectedCell = null;
+    RenderPieces();
+}
+
+private bool IsPuzzleSolved()
+{
+    return order.SequenceEqual(new[] { 0, 1, 2, 3 });
+}
+
+private void RenderPieces()
+{
+    CaptchaGrid.Children.Clear();
+    for (int cell = 0; cell &lt; order.Length; cell++)
+    {
+        int cellIndex = cell;
+        var image = new Image
+        {
+            Source = new BitmapImage(new Uri($"pack://application:,,,/Resources/{order[cell] + 1}.png")),
+            Cursor = Cursors.Hand
+        };
+        image.MouseLeftButtonUp += (_, _) =&gt; OnPieceClick(cellIndex);
+        CaptchaGrid.Children.Add(image);
+    }
+}</code></pre>
+  </details>
+  <h3>Обработка ошибок: try и catch</h3>
+  <p class="prose">Если база выключена, <code>OpenAsync()</code> выбросит исключение <code>NpgsqlException</code>. Не пойманное исключение закрывает программу, а «Автотест» и эксперт проверяют, что приложение не падает. Поэтому каждое обращение к базе оборачиваем в <code>try</code>, а в <code>catch</code> показываем понятное сообщение: что случилось и что сделать. Ловите конкретное исключение (<code>NpgsqlException</code>, <code>FormatException</code>), а не всё подряд: так видно, какую ситуацию вы предусмотрели.</p>
+  <details><summary>Код обработчика кнопки «Войти»</summary>
+<pre><code>private async void LoginButton_Click(object sender, RoutedEventArgs e)
+{
+    string login = LoginTextBox.Text.Trim();
+    string password = PasswordBox.Password;
+
+    if (login.Length == 0 || password.Length == 0)
+    {
+        MessageBox.Show("Введите логин и пароль, затем нажмите «Войти».",
+            "Не заполнены поля", MessageBoxButton.OK, MessageBoxImage.Warning);
+        return;
+    }
+
+    try
+    {
+        var user = await userRepository.FindByLoginAsync(login);
+        if (user is null)
+        {
+            ShowWrongCredentials();
+            return;
+        }
+
+        if (user.IsBlocked)
+        {
+            MessageBox.Show("Вы заблокированы. Обратитесь к администратору",
+                "Доступ запрещён", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
+
+        if (!IsPuzzleSolved() || user.Password != password)
+        {
+            await userRepository.RegisterFailedAttemptAsync(user.Id);
+            ShowWrongCredentials();
+            ShufflePieces();
+            return;
+        }
+
+        await userRepository.ResetFailedAttemptsAsync(user.Id);
+        MessageBox.Show("Вы успешно авторизовались",
+            "Вход выполнен", MessageBoxButton.OK, MessageBoxImage.Information);
+        OpenWorkspace(user);
+    }
+    catch (NpgsqlException)
+    {
+        MessageBox.Show("Не удалось подключиться к базе данных. Проверьте, что сервер PostgreSQL запущен, и повторите попытку.",
+            "Ошибка подключения", MessageBoxButton.OK, MessageBoxImage.Error);
+    }
+}</code></pre>
+  </details>
+</section>
+
+<section class="card" id="tests">
+  <h2>Проверьте своё приложение по сценариям</h2>
+  <p class="prose">Тест-сценарий — это записанная проверка: что сделать и что должно получиться. Эксперт будет проходить почти такие же. Пройдите их сами до сдачи и отметьте галочкой.</p>
+  <div class="tw"><table>
+    <thead><tr><th>№</th><th>Действие</th><th>Ожидаемый результат</th><th>Пройдено</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Нажать «Войти» с пустыми полями</td><td>Предупреждение о незаполненных полях</td><td><input type="checkbox" data-store="t1" aria-label="Сценарий 1"></td></tr>
+      <tr><td>2</td><td>Верный логин, неверный пароль, пазл собран</td><td>Сообщение о неверных данных, счётчик 1</td><td><input type="checkbox" data-store="t2" aria-label="Сценарий 2"></td></tr>
+      <tr><td>3</td><td>Верные данные, пазл не собран</td><td>Вход не выполнен, счётчик +1</td><td><input type="checkbox" data-store="t3" aria-label="Сценарий 3"></td></tr>
+      <tr><td>4</td><td>Три ошибки подряд</td><td>«Вы заблокированы. Обратитесь к администратору»</td><td><input type="checkbox" data-store="t4" aria-label="Сценарий 4"></td></tr>
+      <tr><td>5</td><td>Заблокированный вводит верные данные</td><td>Снова сообщение о блокировке</td><td><input type="checkbox" data-store="t5" aria-label="Сценарий 5"></td></tr>
+      <tr><td>6</td><td>admin, верные данные, пазл собран</td><td>«Вы успешно авторизовались», окно администратора</td><td><input type="checkbox" data-store="t6" aria-label="Сценарий 6"></td></tr>
+      <tr><td>7</td><td>user, верные данные, пазл собран</td><td>«Вы успешно авторизовались», окно пользователя</td><td><input type="checkbox" data-store="t7" aria-label="Сценарий 7"></td></tr>
+      <tr><td>8</td><td>Ошибка, затем успешный вход, затем две ошибки</td><td>Блокировки нет: счётчик сбросился</td><td><input type="checkbox" data-store="t8" aria-label="Сценарий 8"></td></tr>
+      <tr><td>9</td><td>Сервер БД остановлен</td><td>Сообщение об ошибке подключения, приложение не закрылось</td><td><input type="checkbox" data-store="t9" aria-label="Сценарий 9"></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="card" id="admin">
+  <h2>Окно администратора</h2>
+  <p class="prose">Администратор управляет учётными записями: заводит новых сотрудников, меняет роли и снимает блокировку с тех, кто трижды ошибся. Окно обычно состоит из таблицы пользователей (<code>DataGrid</code>) и формы под ней или в отдельном окне.</p>
+  <div class="note"><b>Как показать данные в DataGrid</b>
+    <p>Прочитайте пользователей из базы в <code>List&lt;User&gt;</code> и присвойте список свойству <code>UsersGrid.ItemsSource</code>. DataGrid сам создаст столбцы по свойствам класса. Чтобы заголовки были на русском, задайте столбцы вручную: <code>&lt;DataGridTextColumn Header="Логин" Binding="{Binding Login}"/&gt;</code> и выключите автогенерацию: <code>AutoGenerateColumns="False"</code>. После добавления или изменения пользователя перечитайте список, чтобы таблица обновилась.</p>
+  </div>
+  <ul class="prose">
+    <li>Таблица всех пользователей: логин, роль, заблокирован ли.</li>
+    <li><b>Добавление:</b> перед INSERT проверить, есть ли такой логин. Если есть, сообщить, что пользователь с этим логином уже существует.</li>
+    <li><b>Изменение:</b> роль выбирается из <code>ComboBox</code>, пароль можно сменить.</li>
+    <li><b>Снятие блокировки:</b> <code>is_blocked = false</code> и <code>failed_attempts = 0</code>.</li>
+  </ul>
+<pre><code>public async Task&lt;bool&gt; LoginExistsAsync(string login)
+{
+    await using var connection = new NpgsqlConnection(Database.ConnectionString);
+    await connection.OpenAsync();
+    await using var command = new NpgsqlCommand(
+        "SELECT EXISTS (SELECT 1 FROM users WHERE login = @login)", connection);
+    command.Parameters.AddWithValue("@login", login);
+    return (bool)(await command.ExecuteScalarAsync())!;
+}</code></pre>
+  <h3>Требования к интерфейсу</h3>
+  <ul class="check">
+    <li><label><input type="checkbox" data-store="ui1"> У каждого окна осмысленный заголовок, нигде нет MainWindow</label></li>
+    <li><label><input type="checkbox" data-store="ui2"> Есть минимальный размер окна, при растягивании растёт таблица</label></li>
+    <li><label><input type="checkbox" data-store="ui3"> Tab переводит фокус по порядку</label></li>
+    <li><label><input type="checkbox" data-store="ui4"> Для значений из справочников используется ComboBox</label></li>
+    <li><label><input type="checkbox" data-store="ui5"> Неверный ввод (буквы в числовом поле) даёт понятное сообщение, а не падение</label></li>
+  </ul>
+</section>
+</main>
+<footer>Учебный сайт для подготовки к демоэкзамену. Все предприятия и данные в примерах вымышлены.</footer>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  // ---------- рисуем картинку для капчи и режем на 4 части
+  var W = 240, H = 160;
+  var src = document.createElement("canvas"); src.width = W; src.height = H;
+  var g = src.getContext("2d");
+  var sky = g.createLinearGradient(0, 0, 0, H); sky.addColorStop(0, "#2b5ea8"); sky.addColorStop(1, "#f2b880");
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+  g.fillStyle = "#ffd36b"; g.beginPath(); g.arc(178, 52, 22, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#3a4a63"; g.beginPath(); g.moveTo(0, 130); g.lineTo(60, 60); g.lineTo(120, 125); g.lineTo(170, 75); g.lineTo(240, 135); g.lineTo(240, 160); g.lineTo(0, 160); g.fill();
+  g.fillStyle = "#26324a"; g.fillRect(0, 138, W, 22);
+  g.fillStyle = "#fff"; g.font = "bold 18px sans-serif"; g.fillText("ДЭ-2027", 18, 30);
+
+  var order = [0, 1, 2, 3], selected = null;
+  var users = [
+    { login: "admin", password: "admin", role: "Администратор", failed: 0, blocked: false },
+    { login: "user", password: "user", role: "Пользователь", failed: 0, blocked: false }
+  ];
+  var box = document.getElementById("simPuzzle"), logEl = document.getElementById("simLog");
+
+  function piece(n) {
+    var c = document.createElement("canvas"); c.width = W / 2; c.height = H / 2;
+    c.getContext("2d").drawImage(src, (n % 2) * W / 2, Math.floor(n / 2) * H / 2, W / 2, H / 2, 0, 0, W / 2, H / 2);
+    return c;
+  }
+  function solved() { return order.join() === "0,1,2,3"; }
+  function render() {
+    box.innerHTML = "";
+    order.forEach(function (n, cell) {
+      var c = piece(n);
+      c.setAttribute("role", "button"); c.setAttribute("tabindex", "0"); c.setAttribute("aria-label", "Фрагмент в ячейке " + (cell + 1));
+      if (selected === cell) { c.classList.add("sel"); }
+      function act() {
+        if (selected === null) { selected = cell; render(); return; }
+        var t = order[selected]; order[selected] = order[cell]; order[cell] = t; selected = null; render();
+      }
+      c.onclick = act;
+      c.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); } };
+      box.appendChild(c);
+    });
+  }
+  function shuffle() {
+    do { order.sort(function () { return Math.random() - 0.5; }); } while (solved());
+    selected = null; render();
+  }
+  function log(t) { logEl.insertAdjacentHTML("afterbegin", "<li>" + t + "</li>"); }
+  function table() {
+    var tb = document.querySelector("#simUsers tbody"); tb.innerHTML = "";
+    users.forEach(function (u, i) {
+      tb.insertAdjacentHTML("beforeend", "<tr><td>" + u.login + "</td><td>" + u.role + "</td><td class='n'>" + u.failed +
+        "</td><td>" + (u.blocked ? "<b style='color:var(--bad)'>true</b>" : "false") + "</td><td>" +
+        (u.blocked || u.failed ? "<button class='btn ghost' type='button' data-i='" + i + "' style='padding:2px 8px;font-size:13px'>Разблокировать</button>" : "") + "</td></tr>");
+    });
+    tb.querySelectorAll("button").forEach(function (b) {
+      b.onclick = function () { var u = users[+b.dataset.i]; u.blocked = false; u.failed = 0; log("Администратор разблокировал " + u.login); table(); };
+    });
+  }
+  document.getElementById("simShuffle").onclick = shuffle;
+  document.getElementById("simBtn").onclick = function () {
+    var login = document.getElementById("simLogin").value.trim(), pass = document.getElementById("simPass").value;
+    if (!login || !pass) { msgBox("warning", "Не заполнены поля", "Введите логин и пароль, затем нажмите «Войти»."); return; }
+    var u = users.filter(function (x) { return x.login === login; })[0];
+    var wrong = "Вы ввели неверный логин или пароль. Пожалуйста проверьте ещё раз введенные данные";
+    if (!u) { log("Логин «" + login + "» не найден"); msgBox("error", "Ошибка входа", wrong); return; }
+    if (u.blocked) { log(login + ": попытка входа заблокированного пользователя"); msgBox("error", "Доступ запрещён", "Вы заблокированы. Обратитесь к администратору"); return; }
+    if (!solved() || u.password !== pass) {
+      u.failed++; if (u.failed >= 3) { u.blocked = true; }
+      log(login + ": " + (!solved() ? "пазл не собран" : "неверный пароль") + ", failed_attempts = " + u.failed + (u.blocked ? ", заблокирован" : ""));
+      table();
+      msgBox("error", "Ошибка входа", u.blocked ? "Вы заблокированы. Обратитесь к администратору" : wrong, shuffle);
+      return;
+    }
+    u.failed = 0; table();
+    log(login + ": успешный вход, счётчик сброшен");
+    msgBox("info", "Вход выполнен", "Вы успешно авторизовались", function () {
+      msgBox("info", u.role === "Администратор" ? "Окно администратора" : "Окно пользователя",
+        u.role === "Администратор" ? "Здесь откроется управление пользователями." : "Здесь откроется рабочее окно пользователя.", shuffle);
+    });
+  };
+  shuffle(); table();
+})();
+</script>
+</body>
+</html>

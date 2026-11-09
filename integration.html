@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Интеграция и API · Подготовка к ДЭ</title>
+<meta name="description" content="Материалы для подготовки к демоэкзамену 09.02.07 «Программист»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="index.html">ДЭ <span>09.02.07</span></a>
+  <nav class="top" aria-label="Разделы"><a href="index.html">Главная</a><a href="enterprise.html">Предприятие</a><a href="er.html">ER-диаграмма</a><a href="sql.html">SQL</a><a href="wpf.html">C# и WPF</a><a href="integration.html" aria-current="page">Интеграция и API</a><a href="variants.html">Варианты</a><a href="practice.html">Практика</a><a href="checklist.html">Чек-лист</a></nav>
+</div></header>
+<main>
+<section>
+  <h1>Интеграция: эмулятор, проверка данных и API</h1>
+  <p class="lead">Приложение получает данные от внешней системы по HTTP, проверяет их и записывает результат в документ. Во втором варианте задания вы сами пишете маленький API.</p>
+</section>
+
+<section class="card" id="http">
+  <h2>HTTP в двух словах</h2>
+  <p class="prose">До сих пор ваше приложение общалось только с базой данных. Но на предприятии есть и другие программы: банк, склад, сайт. Они обмениваются данными по сети через HTTP — тот же протокол, по которому браузер открывает сайты.</p>
+  <div class="note analogy"><b>Аналогия: ресторан</b>
+    <p>Вы (клиент) не идёте на кухню (сервер), а говорите официанту, что нужно: «Принесите ФИО клиента». Официант уходит и возвращается с тарелкой (ответом) и словами «вот, пожалуйста» (200) или «такого блюда нет» (404), или «на кухне пожар» (500). API — это меню: список того, что можно заказать и в каком виде это принесут.</p>
+  </div>
+  <div class="grid">
+    <div class="box"><h3>Запрос</h3><p>Метод (<code>GET</code> — получить данные) и адрес: <code>http://localhost:4444/TransferSimulator/fullName</code>.</p></div>
+    <div class="box"><h3>Ответ</h3><p>Код статуса и тело, обычно JSON: <code>{"value": "Иванов Иван Иванович"}</code>.</p></div>
+    <div class="box"><h3>Коды</h3><p><b>200</b> — всё хорошо. <b>400</b> — ошибка в запросе клиента. <b>404</b> — не найдено. <b>500</b> — сбой на сервере.</p></div>
+  </div>
+  <h3>Что такое JSON в ответе</h3>
+  <p class="prose">JSON — способ записать данные текстом так, чтобы их понимали и люди, и программы. <code>{"value": "Иванов Иван Иванович"}</code> — это объект с одним полем <code>value</code>. В C# мы делаем класс с таким же свойством, и библиотека сама переложит текст в объект. Это называется десериализация.</p>
+  <h3>Запуск эмулятора</h3>
+  <p class="prose">На экзамене вместо настоящей внешней системы дают эмулятор TransferSimulator — маленькую программу, которая притворяется сервером и на запрос отдаёт случайное ФИО. Иногда правильное, иногда с ошибками. Ваша задача — получить его и проверить.</p>
+  <ol class="prose">
+    <li>Запустите <code>TransferSimulator.exe</code>. Если окно не закрывается, эмулятор работает. Если не запускается, в командной строке выполните <code>java -jar TransferSimulator.jar</code>.</li>
+    <li>В Postman выберите метод GET, вставьте адрес <code>http://localhost:4444/TransferSimulator/fullName</code> и нажмите Send.</li>
+    <li>Внизу появится JSON с ФИО. Если ответа нет, эмулятор закрыт или в адресе ошибка.</li>
+  </ol>
+</section>
+
+<section class="card" id="fio">
+  <h2>Тренажёр: проверка ФИО</h2>
+  <p class="prose">Кнопка «Получить данные» ведёт себя как эмулятор: иногда присылает корректное ФИО, иногда с цифрами или посторонними символами. Проверка идёт по двум критериям, тем же регулярным выражениям, что и в C#.</p>
+  <div class="win" style="max-width:640px">
+    <div class="bar"><span>Вершина — проверка данных клиента</span><span>— ▢ ×</span></div>
+    <div class="body">
+      <div class="row"><button class="btn" type="button" id="fioGet">Получить данные</button><span class="small">или впишите своё:</span></div>
+      <label class="f">ФИО клиента<input type="text" id="fioIn" autocomplete="off"></label>
+      <div class="row"><button class="btn" type="button" id="fioCheck">Отправить результат теста</button></div>
+      <div class="tw"><table>
+        <thead><tr><th>Действие</th><th>Ожидаемый результат</th><th>Результат</th></tr></thead>
+        <tbody>
+          <tr><td>Проверить ФИО на отсутствие цифр</td><td>ФИО не содержит цифр</td><td id="fioR1">—</td></tr>
+          <tr><td>Проверить ФИО на отсутствие запрещённых символов</td><td>Только буквы, пробелы и дефис</td><td id="fioR2">—</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </div>
+  <h3>Как читать регулярное выражение</h3>
+  <p class="prose">Регулярное выражение — шаблон, с которым сравнивают строку. Разберём <code>^[А-Яа-яЁёA-Za-z\s-]+$</code> по кусочкам:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Кусок</th><th>Значение</th></tr></thead>
+    <tbody>
+      <tr><td><code>^</code></td><td>Начало строки. Без него шаблон искал бы совпадение где угодно внутри.</td></tr>
+      <tr><td><code>[ … ]</code></td><td>Один любой символ из перечисленных внутри скобок.</td></tr>
+      <tr><td><code>А-Я</code>, <code>а-я</code></td><td>Диапазоны русских букв. <b>Ё и ё</b> в этот диапазон не входят, поэтому их перечисляют отдельно, иначе «Пётр» не пройдёт.</td></tr>
+      <tr><td><code>A-Za-z</code></td><td>Латинские буквы.</td></tr>
+      <tr><td><code>\s</code></td><td>Пробельный символ.</td></tr>
+      <tr><td><code>-</code></td><td>Дефис, для двойных фамилий. Стоит в конце скобок, чтобы его не приняли за диапазон.</td></tr>
+      <tr><td><code>+</code></td><td>Предыдущее (символ из скобок) повторяется один или больше раз.</td></tr>
+      <tr><td><code>$</code></td><td>Конец строки. Вместе с <code>^</code> означает «вся строка целиком состоит из этих символов».</td></tr>
+    </tbody>
+  </table></div>
+  <p class="prose">Второй шаблон проще: <code>\d</code> — любая цифра. Если в строке нашлась хоть одна, проверка «нет цифр» не пройдена.</p>
+  <h3>То же на C#</h3>
+<pre><code>using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.RegularExpressions;
+
+public sealed record FullNameResponse(string Value);
+
+public sealed partial class FullNameValidator
+{
+    private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(8) };
+
+    public async Task&lt;string&gt; GetFullNameAsync()
+    {
+        var response = await Http.GetFromJsonAsync&lt;FullNameResponse&gt;(
+            "http://localhost:4444/TransferSimulator/fullName",
+            new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        return response?.Value ?? string.Empty;
+    }
+
+    public bool HasNoDigits(string fullName) =&gt; !DigitsRegex().IsMatch(fullName);
+
+    public bool HasOnlyAllowedChars(string fullName) =&gt; AllowedRegex().IsMatch(fullName.Trim());
+
+    [GeneratedRegex(@"\d")]
+    private static partial Regex DigitsRegex();
+
+    // Буквы русского и латинского алфавита, пробел и дефис (двойные фамилии)
+    [GeneratedRegex(@"^[А-Яа-яЁёA-Za-z\s-]+$")]
+    private static partial Regex AllowedRegex();
+}</code></pre>
+  <p class="small">Если эмулятор не запущен, <code>GetFromJsonAsync</code> выбросит <code>HttpRequestException</code>. Поймайте его и покажите сообщение об ошибке, приложение не должно закрыться.</p>
+</section>
+
+<section class="card" id="testcase">
+  <h2>ТестКейс.docx</h2>
+  <p class="prose">Тест-кейс — документ, где записано, что проверяли, что ожидали и что получилось. Программа должна сама заполнить столбец «Результат». Чтобы она нашла нужную ячейку, в Word ставят закладки: невидимые метки с именами. Программа ищет метку по имени и вставляет рядом текст.</p>
+  <ol class="prose">
+    <li>Откройте ТестКейс.docx в Word. Заполните столбцы «Действие» и «Ожидаемый результат» для двух проверок, как в таблице выше.</li>
+    <li>Поставьте курсор в ячейку столбца «Результат» первой строки: Вставка → Закладка → имя <code>Result1</code> → Добавить. Для второй строки <code>Result2</code>.</li>
+    <li>Программа копирует шаблон и пишет «Успешно» или «Не успешно» на место закладки. Для этого подойдёт пакет <code>DocumentFormat.OpenXml</code>.</li>
+  </ol>
+<pre><code>using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+
+public static void WriteResult(string path, string bookmarkName, string text)
+{
+    using var document = WordprocessingDocument.Open(path, true);
+    var bookmark = document.MainDocumentPart!.Document.Body!
+        .Descendants&lt;BookmarkStart&gt;()
+        .First(b =&gt; b.Name == bookmarkName);
+
+    // Вставляем текст сразу после начала закладки
+    bookmark.Parent!.InsertAfter(new Run(new Text(text)), bookmark);
+    document.MainDocumentPart.Document.Save();
+}</code></pre>
+</section>
+
+<section class="card" id="api">
+  <h2>Свой API: список заметок</h2>
+  <p class="prose">Теперь вы сами становитесь «кухней»: пишете сервер, который по запросу отдаёт данные из базы в JSON. Другая программа (мобильное приложение, сайт) сможет их получить, ничего не зная о вашей базе.</p>
+  <div class="note"><b>Как связаны части</b>
+    <ol>
+      <li>Клиент отправляет <code>GET http://localhost:5000/api/notes</code>.</li>
+      <li>ASP.NET Core видит адрес <code>/api/notes</code> и вызывает метод, который вы к нему привязали через <code>MapGet</code>. Привязку «адрес + метод» называют эндпоинтом.</li>
+      <li>Метод достаёт строки из базы, превращает каждую в объект нужного вида и возвращает список.</li>
+      <li>ASP.NET Core сам превращает список в JSON и ставит код 200.</li>
+    </ol>
+  </div>
+  <p class="prose">Задание: таблица <code>notes</code> (id, title, content, id_user, created_at) и эндпоинт <code>GET /api/notes</code>. Каждая заметка в ответе выглядит так: <code>title_user</code> = «заголовок - логин», дата в формате ДД.ММ.ГГГГ.</p>
+  <h3>Посмотрите, как строки из базы превращаются в ответ</h3>
+  <div class="grid">
+    <div class="box">
+      <b>notes JOIN users</b>
+      <div class="tw"><table id="apiIn"><thead><tr><th>id</th><th>title</th><th>login</th><th>created_at</th></tr></thead><tbody></tbody></table></div>
+      <div class="row"><label class="f">Сценарий<select id="apiCase"><option value="ok">База работает</option><option value="empty">Таблица пуста</option><option value="bad">Параметр userId=abc</option><option value="down">База остановлена</option></select></label></div>
+    </div>
+    <div class="box"><b>Ответ сервера</b><div id="apiStatus" class="res ok"></div><pre><code id="apiOut"></code></pre></div>
+  </div>
+  <h3>Код на ASP.NET Core (Minimal API)</h3>
+  <p class="small">Новый проект: шаблон «Пустой ASP.NET Core» или <code>dotnet new web</code>, плюс пакет Npgsql.</p>
+<pre><code>var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
+
+app.MapGet("/api/notes", async (string? userId) =&gt;
+{
+    if (userId is not null &amp;&amp; !int.TryParse(userId, out _))
+    {
+        return Results.BadRequest(new { error = "Параметр userId должен быть целым числом" });
+    }
+
+    try
+    {
+        var notes = await NotesRepository.GetAllAsync(userId);
+        var response = notes.Select(note =&gt; new
+        {
+            id = note.Id,
+            title_user = $"{note.Title} - {note.Login}",
+            content = note.Content,
+            formatted_date = note.CreatedAt.ToString("dd.MM.yyyy")
+        });
+        return Results.Ok(response);   // пустой список тоже 200 и []
+    }
+    catch (NpgsqlException)
+    {
+        return Results.Json(new { error = "Ошибка подключения к базе данных" }, statusCode: 500);
+    }
+});
+
+app.Run();</code></pre>
+  <h3>Разбор кода</h3>
+  <ul class="prose">
+    <li><b><code>WebApplication.CreateBuilder</code> / <code>Build</code> / <code>Run</code></b> — заготовка любого веб-приложения: настроить, собрать, запустить и ждать запросов.</li>
+    <li><b><code>(string? userId)</code></b> — параметр из адреса: <code>/api/notes?userId=5</code>. Вопросительный знак: параметр необязательный.</li>
+    <li><b><code>Results.BadRequest</code></b> — код 400. Ошибка клиента: он прислал неправильный запрос.</li>
+    <li><b><code>new { id = …, title_user = … }</code></b> — анонимный объект ровно с теми полями, что требуются в задании. Имена полей попадут в JSON как есть, поэтому пишем их в нужном регистре.</li>
+    <li><b><code>Results.Json(..., statusCode: 500)</code></b> — код 500 с понятным сообщением в теле. Ошибка сервера: клиент ни при чём.</li>
+  </ul>
+  <h3>Тесты в Postman</h3>
+  <p class="prose">Postman умеет не только отправлять запросы, но и проверять ответы. Тест — функция <code>pm.test("название", проверка)</code>. Если проверка не выбросила ошибку, тест зелёный. Результаты видны на вкладке Test Results под ответом. Сохраните запросы в коллекцию и экспортируйте её: это тоже часть сдачи.</p>
+  <p class="small">Вкладка Scripts → Post-response. Для теста 500 остановите службу PostgreSQL и отправьте запрос ещё раз.</p>
+<pre><code>pm.test("Статус 200", () =&gt; pm.response.to.have.status(200));
+
+pm.test("Ответ — корректный JSON", () =&gt; {
+    pm.expect(() =&gt; pm.response.json()).to.not.throw();
+});
+
+pm.test("Статус 500 при сбое базы", () =&gt; pm.response.to.have.status(500));</code></pre>
+  <h3>Документация API</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Базовый URL</th><th>Метод</th><th>Параметры</th><th>Описание</th><th>Формат ответа</th></tr></thead>
+    <tbody><tr><td><code>http://localhost:5000</code></td><td><code>GET /api/notes</code></td><td><code>userId</code> (необязательный, целое)</td><td>Список заметок с логином автора</td><td>JSON-массив объектов {id, title_user, content, formatted_date}</td></tr></tbody>
+  </table></div>
+  <div class="tw"><table>
+    <thead><tr><th>Код</th><th>Описание</th></tr></thead>
+    <tbody><tr><td>200</td><td>Успех, в том числе пустой массив</td></tr><tr><td>400</td><td>Неверный параметр запроса</td></tr><tr><td>500</td><td>Ошибка сервера или базы данных, в теле поле error</td></tr></tbody>
+  </table></div>
+</section>
+</main>
+<footer>Учебный сайт для подготовки к демоэкзамену. Все предприятия и данные в примерах вымышлены.</footer>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  // ---------- эмулятор ФИО
+  var good = ["Иванов Иван Иванович", "Петрова-Водкина Анна Сергеевна", "Ким Ольга Викторовна", "Smith John"];
+  var bad = ["Сидоров Пётр1 Ильич", "Кузнецова Мария_Олеговна", "Орлов Олег Олегович!", "Ли@ Анна Павловна", "Белов 2 Андрей"];
+  var inp = document.getElementById("fioIn");
+  document.getElementById("fioGet").onclick = function () {
+    var pool = Math.random() < 0.5 ? good : bad;
+    inp.value = pool[Math.floor(Math.random() * pool.length)];
+    document.getElementById("fioR1").textContent = "—"; document.getElementById("fioR2").textContent = "—";
+  };
+  document.getElementById("fioCheck").onclick = function () {
+    var v = inp.value;
+    if (!v.trim()) { msgBox("warning", "Нет данных", "Сначала нажмите «Получить данные» или впишите ФИО."); return; }
+    var r1 = !/\d/.test(v), r2 = /^[А-Яа-яЁёA-Za-z\s-]+$/.test(v.trim());
+    var c1 = document.getElementById("fioR1"), c2 = document.getElementById("fioR2");
+    c1.innerHTML = r1 ? "<b style='color:var(--ok)'>Успешно</b>" : "<b style='color:var(--bad)'>Не успешно</b>";
+    c2.innerHTML = r2 ? "<b style='color:var(--ok)'>Успешно</b>" : "<b style='color:var(--bad)'>Не успешно</b>";
+  };
+
+  // ---------- API
+  var rows = [
+    [1, "Конференция ИТ", "user25", "2027-03-15"], [2, "Отчёт за квартал", "admin", "2027-03-18"], [3, "Закупка ДСП", "user25", "2027-04-02"]
+  ];
+  var tb = document.querySelector("#apiIn tbody");
+  rows.forEach(function (r) { tb.insertAdjacentHTML("beforeend", "<tr><td>" + r.join("</td><td>") + "</td></tr>"); });
+  function api() {
+    var mode = document.getElementById("apiCase").value, st = document.getElementById("apiStatus"), out = document.getElementById("apiOut");
+    if (mode === "ok") {
+      setRes(st, "ok", "200 OK");
+      out.textContent = JSON.stringify(rows.map(function (r) {
+        var d = r[3].split("-");
+        return { id: r[0], title_user: r[1] + " - " + r[2], content: "…", formatted_date: d[2] + "." + d[1] + "." + d[0] };
+      }), null, 2);
+    } else if (mode === "empty") { setRes(st, "ok", "200 OK"); out.textContent = "[]"; }
+    else if (mode === "bad") { setRes(st, "warn", "400 Bad Request"); out.textContent = JSON.stringify({ error: "Параметр userId должен быть целым числом" }, null, 2); }
+    else { setRes(st, "bad", "500 Internal Server Error"); out.textContent = JSON.stringify({ error: "Ошибка подключения к базе данных" }, null, 2); }
+  }
+  document.getElementById("apiCase").onchange = api;
+  api();
+})();
+</script>
+</body>
+</html>

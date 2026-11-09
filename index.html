@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Подготовка к ДЭ 09.02.07</title>
+<meta name="description" content="Материалы для подготовки к демоэкзамену 09.02.07 «Программист»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="index.html">ДЭ <span>09.02.07</span></a>
+  <nav class="top" aria-label="Разделы"><a href="index.html" aria-current="page">Главная</a><a href="enterprise.html">Предприятие</a><a href="er.html">ER-диаграмма</a><a href="sql.html">SQL</a><a href="wpf.html">C# и WPF</a><a href="integration.html">Интеграция и API</a><a href="variants.html">Варианты</a><a href="practice.html">Практика</a><a href="checklist.html">Чек-лист</a></nav>
+</div></header>
+<main>
+<section>
+  <h1>Подготовка к демоэкзамену «Программист»</h1>
+  <p class="lead">Здесь всё, что нужно, чтобы пройти путь от документов заказчика до работающего приложения: объяснения простым языком, разобранные примеры и тренажёры. Тренажёры работают прямо в браузере, а для практики на компьютере понадобятся программы из раздела «Что установить».</p>
+</section>
+
+<section class="card">
+  <h2>Что будет на экзамене</h2>
+  <div class="prose">
+    <p>Экзамен устроен как маленький настоящий проект. Представьте, что вас наняли в фирму, которая делает программы на заказ. Пришёл клиент — производственное предприятие — и принёс папку со своими документами: бланки заказов, спецификации, прайсы, список контрагентов. Он не говорит, какие таблицы нужны, он просто показывает, как работает.</p>
+    <p>Ваша задача пройти весь путь разработчика: разобраться в чужом бизнесе, спроектировать базу, наполнить её данными клиента, научить её считать, а потом сделать приложение, через которое сотрудники будут с ней работать. Каждый следующий модуль опирается на предыдущий, поэтому ошибка в ER-диаграмме тянется до самого конца. Начинайте подготовку с понимания предприятия, а не с кода.</p>
+  </div>
+  <div class="tw"><table>
+    <thead><tr><th>Модуль</th><th>Что сделать</th><th>Раздел сайта</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>ER-диаграмма по документам заказчика: 3НФ, ключи, связи, PDF</td><td><a href="enterprise.html">Предприятие</a>, <a href="er.html">ER-диаграмма</a></td></tr>
+      <tr><td>2</td><td>База данных по ER, импорт контрагентов из JSON</td><td><a href="sql.html">SQL</a></td></tr>
+      <tr><td>3</td><td>Запрос полной стоимости заказа покупателя</td><td><a href="sql.html#query">SQL</a></td></tr>
+      <tr><td>4</td><td>Приложение: вход, роли, капча-пазл, блокировка, администрирование пользователей</td><td><a href="wpf.html">C# и WPF</a></td></tr>
+      <tr><td>5</td><td>Проектная документация: назначение, методы, параметры</td><td><a href="checklist.html#docs">Чек-лист</a></td></tr>
+      <tr><td>6</td><td>Интеграция: данные от эмулятора, проверка ФИО, тест-кейс; API и Postman</td><td><a href="integration.html">Интеграция и API</a></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="card" id="official">
+  <h2>Официальные материалы экзамена</h2>
+  <p class="prose">Задания, приложения и критерии оценки демоэкзамена публикует ИРПО в Банке оценочных материалов (БОМ). Там лежат настоящие пакеты документов, по которым сдают экзамен. На этом сайте мы учимся их понимать, а на БОМ смотрите оригиналы.</p>
+  <p><a class="btn" href="https://bom.firpo.ru/Public/6506" target="_blank" rel="noopener">Открыть БОМ: материалы демоэкзамена</a></p>
+  <p class="small">Адрес: bom.firpo.ru/Public/6506. Сайт открывается в новой вкладке.</p>
+</section>
+
+<section class="card" id="plan">
+  <h2>План занятий</h2>
+  <p class="prose">Каждое занятие опирается на предыдущее. Пропустили одно — прочитайте раздел сайта и сделайте задание до следующей встречи, иначе дальше будет непонятно.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Дата</th><th>Тема</th><th>Прочитать до занятия</th><th>Сделать после занятия</th></tr></thead>
+    <tbody>
+      <tr><td>9 ноября</td><td>Как работает предприятие</td><td>—</td><td>
+        <ul>
+          <li>В <a href="https://sql-academy.org/ru/practicums" target="_blank" rel="noopener">практикумах SQL Academy</a> пройти «Основы SQL» и «Подготовка к собеседованию».</li>
+          <li>Выбрать предприятие на странице <a href="variants.html">«Варианты»</a> и подготовить по нему пакет документов.</li>
+        </ul></td></tr>
+      <tr><td>16 ноября</td><td>От документа к ER-диаграмме</td><td><a href="er.html#what">Из чего состоит ER</a>, <a href="er.html#keys">ключи</a></td><td>Разработать ER-диаграммы по вариантам ДЭ, которые раздаст преподаватель, и по своему предприятию. Сдать в PDF.</td></tr>
+      <tr><td>23 ноября</td><td>База данных, импорт, запрос</td><td><a href="sql.html#parts">Две половины SQL</a>, <a href="sql.html#types">типы данных</a></td><td>
+        <ul>
+          <li>Решить все задачи в <a href="sql.html#sandbox">SQL-песочнице</a>.</li>
+          <li>Создать базу своего предприятия и написать к ней запросы по заданию, в том числе запрос стоимости заказа.</li>
+        </ul></td></tr>
+      <tr><td>30 ноября</td><td>Первое окно на WPF</td><td><a href="wpf.html#idea">Чем оконное приложение отличается от консольного</a></td><td>
+        <ul>
+          <li>Дома решить лабораторные работы.</li>
+          <li>Собрать WPF-проект по своему варианту: структура папок, подключение к своей базе.</li>
+        </ul></td></tr>
+      <tr><td>7 декабря</td><td>Вход, роли, капча</td><td><a href="wpf.html#login">Требования к входу</a>, поиграть с <a href="wpf.html#sim">симулятором</a></td><td>Окно входа в своём проекте, которое проходит все 9 <a href="wpf.html#tests">сценариев</a></td></tr>
+      <tr><td>14 декабря</td><td>Администратор, API</td><td><a href="wpf.html#admin">Окно администратора</a>, <a href="integration.html#api">свой API</a></td><td>Разработать API для своего проекта: эндпоинт, коды ответов, тесты в Postman, документация API.</td></tr>
+      <tr><td>21 декабря</td><td>Повторение всего курса</td><td><a href="integration.html#http">HTTP в двух словах</a>, весь <a href="checklist.html">чек-лист</a></td><td>Практика по всем модулям: повторяем ДЭ целиком на своём варианте и на вариантах ДЭ.</td></tr>
+      <tr><td>28 декабря</td><td>Пробный экзамен</td><td>Весь <a href="checklist.html">чек-лист</a></td><td>Список своих пробелов на январь</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="card" id="install">
+  <h2>Что установить</h2>
+  <p class="prose">На экзамене всё уже установлено. Дома, чтобы тренироваться, понадобятся эти программы. Все бесплатные. Ставьте по мере надобности: к 23 ноября базу данных, к 30 ноября Visual Studio, к 21 декабря Java и Postman.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Программа</th><th>Зачем</th><th>Где скачать</th></tr></thead>
+    <tbody>
+      <tr><td>PostgreSQL</td><td>Сервер базы данных. При установке запомните пароль пользователя postgres</td><td><a href="https://www.postgresql.org/download/windows/" target="_blank" rel="noopener">postgresql.org</a></td></tr>
+      <tr><td>DBeaver Community</td><td>Удобное окно для работы с базой: таблицы, запросы, импорт CSV, ER-диаграмма по готовой базе. При установке PostgreSQL можно снять галочку pgAdmin, DBeaver его заменяет</td><td><a href="https://dbeaver.io/download/" target="_blank" rel="noopener">dbeaver.io</a></td></tr>
+      <tr><td>draw.io</td><td>Рисование ER-диаграмм. Можно и в браузере, без установки</td><td><a href="https://app.diagrams.net/" target="_blank" rel="noopener">app.diagrams.net</a></td></tr>
+      <tr><td>Visual Studio Community</td><td>Среда для C# и WPF. В установщике отметьте «Разработка классических приложений .NET»</td><td><a href="https://visualstudio.microsoft.com/ru/vs/community/" target="_blank" rel="noopener">visualstudio.microsoft.com</a></td></tr>
+      <tr><td>Java</td><td>Нужна для запуска эмулятора TransferSimulator</td><td><a href="https://adoptium.net/" target="_blank" rel="noopener">adoptium.net</a></td></tr>
+      <tr><td>Postman</td><td>Отправка HTTP-запросов и тесты API</td><td><a href="https://www.postman.com/downloads/" target="_blank" rel="noopener">postman.com</a></td></tr>
+      <tr><td>DevDocs</td><td>Справочники по языкам и технологиям в одном окне с быстрым поиском, например по PostgreSQL и HTTP. Ставить не нужно, открывается в браузере. В настройках можно включить офлайн-режим и скачать нужные справочники заранее</td><td><a href="https://devdocs.io/" target="_blank" rel="noopener">devdocs.io</a></td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Если у вас Mac или слабый компьютер</b>
+    <p>WPF работает только в Windows. Всё, что связано с ER и SQL, можно делать где угодно: draw.io в браузере, SQL — в песочнице на этом сайте. Окна на WPF тогда тренируйте на компьютерах колледжа.</p>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Тренажёры на сайте</h2>
+  <div class="grid">
+    <div class="box"><h3>Калькулятор заказа</h3><p>Меняете количество столов и видите, сколько нужно материалов и во что обойдётся заказ.</p><a href="enterprise.html#calc">Открыть</a></div>
+    <div class="box"><h3>Проверка имён таблиц</h3><p>Вводите имя таблицы или поля, сайт говорит, пропустит ли его «Автотест».</p><a href="er.html#naming">Открыть</a></div>
+    <div class="box"><h3>Квиз по 3НФ</h3><p>Какая схема в третьей нормальной форме и почему остальные нет.</p><a href="er.html#nf">Открыть</a></div>
+    <div class="box"><h3>SQL-песочница</h3><p>Учебная база предприятия прямо в браузере. Пишете запрос и сразу видите результат.</p><a href="sql.html#sandbox">Открыть</a></div>
+    <div class="box"><h3>Симулятор окна входа</h3><p>Капча-пазл, три попытки, блокировка и разблокировка администратором. Та же логика, что нужна в WPF.</p><a href="wpf.html#sim">Открыть</a></div>
+    <div class="box"><h3>Проверка ФИО</h3><p>Эмулятор присылает ФИО, вы проверяете его теми же регулярными выражениями, что и в C#.</p><a href="integration.html#fio">Открыть</a></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Как заниматься</h2>
+  <ol class="prose">
+    <li>Перед занятием прочитайте раздел этой недели и пройдите тренажёр.</li>
+    <li>Решения спрятаны в блоках «Показать решение». Сначала попробуйте сами.</li>
+    <li>Каждую неделю решайте задачи в <a href="https://sql-academy.org/ru/trainer" target="_blank" rel="noopener">SQL Academy</a> по теме, которую назовёт преподаватель.</li>
+    <li>Перед сдачей любой работы пройдитесь по <a href="checklist.html">чек-листу</a>.</li>
+  </ol>
+</section>
+
+<section class="card" id="faq">
+  <h2>Частые вопросы</h2>
+  <details><summary>Я совсем не понимаю, что такое ER. С чего начать?</summary>
+    <p>Не с ER, а с предприятия. Прочитайте страницу <a href="enterprise.html">«Предприятие»</a> и пройдите калькулятор заказа. Когда понятно, откуда берётся каждое число, таблицы почти рисуются сами. Потом раздел <a href="er.html#what">«Из чего состоит ER»</a> и только после него алгоритм из 6 шагов.</p>
+  </details>
+  <details><summary>Я плохо помню C#. Справлюсь с WPF?</summary>
+    <p>Для экзамена нужны классы со свойствами, <code>List&lt;T&gt;</code>, условия, циклы, <code>try/catch</code> и методы. Если это знаете, справитесь: WPF добавляет только окна и события. Освежите эти темы до 30 ноября.</p>
+  </details>
+  <details><summary>Где взять ещё документы для тренировки?</summary>
+    <p>На странице <a href="practice.html">«Практика»</a> шесть пакетов вымышленных предприятий в формате экзамена. Настоящие задания прошлых лет лежат в <a href="https://bom.firpo.ru/Public/6506" target="_blank" rel="noopener">БОМ</a>.</p>
+  </details>
+  <details><summary>Решение из блока «Показать решение» не совпадает с моим. Я ошибся?</summary>
+    <p>Не обязательно. Для ER и кода бывает несколько верных решений. Проверьте своё по чек-листу: 3НФ, ключи, имена, работает ли. Если сомневаетесь, принесите на занятие.</p>
+  </details>
+  <details><summary>SQL-песочница не загружается</summary>
+    <p>Она подгружает движок базы из интернета. Проверьте подключение и обновите страницу. В школьной сети иногда блокируют внешние сайты, тогда попробуйте дома.</p>
+  </details>
+</section>
+</main>
+<footer>Учебный сайт для подготовки к демоэкзамену. Все предприятия и данные в примерах вымышлены.</footer>
+<script src="assets/app.js"></script>
+
+</body>
+</html>

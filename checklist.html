@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Чек-лист · Подготовка к ДЭ</title>
+<meta name="description" content="Материалы для подготовки к демоэкзамену 09.02.07 «Программист»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="index.html">ДЭ <span>09.02.07</span></a>
+  <nav class="top" aria-label="Разделы"><a href="index.html">Главная</a><a href="enterprise.html">Предприятие</a><a href="er.html">ER-диаграмма</a><a href="sql.html">SQL</a><a href="wpf.html">C# и WPF</a><a href="integration.html">Интеграция и API</a><a href="variants.html">Варианты</a><a href="practice.html">Практика</a><a href="checklist.html" aria-current="page">Чек-лист</a></nav>
+</div></header>
+<main>
+<section>
+  <h1>Чек-лист перед сдачей</h1>
+  <p class="lead">Составлен по тому, что проверяет «Автотест», и по требованиям к разработке. Отметки сохраняются в вашем браузере.</p>
+  <div class="note"><b>Что такое «Автотест»</b>
+    <p>Часть баллов на экзамене ставит не человек, а программа. Она открывает ваши файлы и механически проверяет правила: имена таблиц, наличие ключей, структуру папок, сообщения в коде. Программа не знает, что вы «имели в виду». Поле <code>Дата заказа</code> вместо <code>order_date</code> — минус балл, даже если всё работает. Поэтому чек-лист проходите построчно, а не на глаз.</p>
+  </div>
+  <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+  <p class="small" id="progText"></p>
+</section>
+
+<section class="card">
+  <div class="grid">
+    <div class="box"><h3>База данных</h3><ul class="check">
+      <li><label><input type="checkbox" data-store="c1"> Имена таблиц и полей: латиница, нижний регистр, snake_case, без пробелов</label></li>
+      <li><label><input type="checkbox" data-store="c2"> У каждой таблицы первичный ключ, все связи через внешние ключи</label></li>
+      <li><label><input type="checkbox" data-store="c3"> Схема в 3НФ, нет таблицы под отчёт</label></li>
+      <li><label><input type="checkbox" data-store="c4"> Данные из JSON импортированы полностью</label></li>
+      <li><label><input type="checkbox" data-store="c5"> Связанные данные не теряют ссылочной целостности</label></li>
+      <li><label><input type="checkbox" data-store="c6"> Запрос стоимости заказа даёт проверочное число</label></li>
+    </ul></div>
+    <div class="box"><h3>Проект и код</h3><ul class="check">
+      <li><label><input type="checkbox" data-store="c7"> Название приложения содержит имя заказчика</label></li>
+      <li><label><input type="checkbox" data-store="c8"> Папки Views, Models, Services, Data</label></li>
+      <li><label><input type="checkbox" data-store="c9"> PascalCase для классов и методов, camelCase для локальных переменных</label></li>
+      <li><label><input type="checkbox" data-store="c10"> Нет button1, Window1 и заголовка MainWindow</label></li>
+      <li><label><input type="checkbox" data-store="c11"> Одна команда в строке, нет закомментированного кода</label></li>
+    </ul></div>
+    <div class="box"><h3>Пользователь и ошибки</h3><ul class="check">
+      <li><label><input type="checkbox" data-store="c12"> Есть сообщения трёх типов: ошибка, предупреждение, информация</label></li>
+      <li><label><input type="checkbox" data-store="c13"> Ввод данных неверного типа не роняет приложение</label></li>
+      <li><label><input type="checkbox" data-store="c14"> Недоступная база данных не роняет приложение</label></li>
+      <li><label><input type="checkbox" data-store="c15"> Ошибка при выполнении операции обрабатывается</label></li>
+      <li><label><input type="checkbox" data-store="c16"> Комментарии у неочевидных мест объясняют зачем</label></li>
+      <li><label><input type="checkbox" data-store="c17"> Минимальный размер окон и порядок перехода по Tab</label></li>
+    </ul></div>
+    <div class="box"><h3>Комплект сдачи</h3><ul class="check">
+      <li><label><input type="checkbox" data-store="c18"> src/ — решение открывается и собирается</label></li>
+      <li><label><input type="checkbox" data-store="c19"> resources/ и database/ (скрипты или дамп)</label></li>
+      <li><label><input type="checkbox" data-store="c20"> ERD.pdf</label></li>
+      <li><label><input type="checkbox" data-store="c21"> README.md</label></li>
+      <li><label><input type="checkbox" data-store="c22"> Проектная документация с методами и параметрами</label></li>
+    </ul></div>
+  </div>
+  <div class="row"><button class="btn ghost" type="button" id="resetAll">Сбросить отметки</button></div>
+</section>
+
+<section class="card" id="folder">
+  <h2>Структура папки для сдачи</h2>
+<pre><code>Vershina/
+├── src/            решение (.sln/.slnx) и проекты
+├── resources/      картинки капчи, шаблон ТестКейс.docx
+├── database/       schema.sql, data.sql или дамп
+├── ERD.pdf
+└── README.md</code></pre>
+</section>
+
+<section class="card" id="readme">
+  <h2>Шаблон README.md</h2>
+<pre><code># Vershina.Production
+
+Информационная система ООО ТД «Вершина» для учёта пользователей
+и проверки данных клиентов.
+
+## Технологии
+- C#, WPF, .NET 8
+- PostgreSQL 16, библиотека Npgsql
+
+## Основные функции
+- Вход по логину и паролю с капчей-пазлом
+- Блокировка после трёх неудачных попыток подряд
+- Окно администратора: добавление, изменение и разблокировка пользователей
+- Проверка ФИО клиента, полученного от TransferSimulator
+
+## Подготовка базы данных
+1. Создайте базу `vershina` в PostgreSQL.
+2. Выполните `database/schema.sql`, затем `database/data.sql`.
+3. При необходимости измените строку подключения в `src/Vershina.Production/Data/Database.cs`.
+
+## Запуск
+1. Откройте `src/Vershina.sln` в Visual Studio.
+2. Восстановите пакеты NuGet и запустите проект.
+
+## Тестовые учётные записи
+| Логин | Пароль | Роль |
+|-------|--------|------|
+| admin | admin  | Администратор |
+| user  | user   | Пользователь |</code></pre>
+</section>
+
+<section class="card" id="docs">
+  <h2>Проектная документация (модуль 5)</h2>
+  <p class="prose">Опишите функциональное назначение системы и каждый важный метод: класс, имя, параметры, что возвращает, что делает.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Класс</th><th>Метод</th><th>Параметры</th><th>Возвращает</th><th>Назначение</th></tr></thead>
+    <tbody>
+      <tr><td><code>UserRepository</code></td><td><code>FindByLoginAsync</code></td><td><code>string login</code></td><td><code>Task&lt;User?&gt;</code></td><td>Ищет пользователя по логину, возвращает null, если не найден</td></tr>
+      <tr><td><code>UserRepository</code></td><td><code>RegisterFailedAttemptAsync</code></td><td><code>int userId</code></td><td><code>Task</code></td><td>Увеличивает счётчик ошибок, на третьей блокирует</td></tr>
+      <tr><td><code>LoginWindow</code></td><td><code>IsPuzzleSolved</code></td><td>нет</td><td><code>bool</code></td><td>Проверяет, что фрагменты капчи стоят по порядку</td></tr>
+      <tr><td><code>FullNameValidator</code></td><td><code>HasOnlyAllowedChars</code></td><td><code>string fullName</code></td><td><code>bool</code></td><td>Проверяет, что в ФИО только буквы, пробелы и дефис</td></tr>
+    </tbody>
+  </table></div>
+</section>
+</main>
+<footer>Учебный сайт для подготовки к демоэкзамену. Все предприятия и данные в примерах вымышлены.</footer>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  var boxes = document.querySelectorAll(".check input[type=checkbox]");
+  function upd() {
+    var n = 0; boxes.forEach(function (b) { if (b.checked) { n++; } });
+    document.getElementById("prog").style.width = (n / boxes.length * 100) + "%";
+    document.getElementById("progText").textContent = "Выполнено " + n + " из " + boxes.length + ".";
+  }
+  document.addEventListener("checks-changed", upd);
+  document.getElementById("resetAll").onclick = function () {
+    boxes.forEach(function (b) { b.checked = false; try { localStorage.removeItem("de-" + b.dataset.store); } catch (e) {} });
+    upd();
+  };
+  upd();
+})();
+</script>
+</body>
+</html>

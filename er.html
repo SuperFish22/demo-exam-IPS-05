@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ER-диаграмма · Подготовка к ДЭ</title>
+<meta name="description" content="Материалы для подготовки к демоэкзамену 09.02.07 «Программист»">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700&family=PT+Sans:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+
+</head>
+<body>
+<header class="site"><div class="in">
+  <a class="logo" href="index.html">ДЭ <span>09.02.07</span></a>
+  <nav class="top" aria-label="Разделы"><a href="index.html">Главная</a><a href="enterprise.html">Предприятие</a><a href="er.html" aria-current="page">ER-диаграмма</a><a href="sql.html">SQL</a><a href="wpf.html">C# и WPF</a><a href="integration.html">Интеграция и API</a><a href="variants.html">Варианты</a><a href="practice.html">Практика</a><a href="checklist.html">Чек-лист</a></nav>
+</div></header>
+<main>
+<section>
+  <h1>Как построить ER-диаграмму по документам</h1>
+  <p class="lead">ER-диаграмма — это чертёж будущей базы данных: какие будут таблицы, какие в них поля и как таблицы связаны. Строители не начинают дом без чертежа, программисты не начинают базу без ER.</p>
+</section>
+
+<section class="card" id="what">
+  <h2>Из чего состоит ER-диаграмма</h2>
+  <p class="prose">ER расшифровывается как Entity-Relationship, «сущность — связь». В ней три вида элементов.</p>
+  <div class="grid">
+    <div class="box"><h3>Сущность</h3><p>То, о чём мы храним сведения: контрагент, заказ, материал. На диаграмме это прямоугольник, в базе — таблица. Одна строка таблицы — один конкретный экземпляр: один контрагент, один заказ.</p></div>
+    <div class="box"><h3>Атрибут</h3><p>Свойство сущности: у контрагента название, ИНН, телефон. В базе это столбец таблицы.</p></div>
+    <div class="box"><h3>Связь</h3><p>Как сущности относятся друг к другу: заказ <i>сделан</i> контрагентом, в спецификации <i>есть</i> материалы. На диаграмме это линия, в базе — внешний ключ.</p></div>
+  </div>
+  <div class="note analogy"><b>Аналогия: школьный журнал</b>
+    <p>Сущности: ученик, предмет, оценка. Атрибуты ученика: фамилия, имя, класс. Оценка связывает ученика и предмет: «Иванов получил 5 по математике 12 марта». Оценка не может существовать без ученика и предмета, она на них ссылается.</p>
+  </div>
+</section>
+
+<section class="card" id="keys">
+  <h2>Первичный и внешний ключ</h2>
+  <h3>Первичный ключ (PK)</h3>
+  <p class="prose">Значение, которое однозначно определяет строку. Как номер паспорта у человека: имён «Иван Иванов» тысячи, а номер паспорта один. В таблице не может быть двух строк с одинаковым первичным ключом.</p>
+  <p class="prose">Почему почти всегда делают отдельное поле <code>id</code>, а не берут что-то из документа, например код или название? Потому что всё «настоящее» может поменяться или оказаться неуникальным. Название компании меняют, код в разных документах записан по-разному (вы видели это в «Вершине»). Искусственный номер <code>id</code> выдаёт сама база, и он никогда не меняется.</p>
+  <h3>Внешний ключ (FK)</h3>
+  <p class="prose">Поле, которое хранит первичный ключ строки из другой таблицы. В заказе не пишут заново название, ИНН и телефон покупателя, а пишут только его номер: <code>customer_id = 11</code>. Это и есть ссылка. База следит, чтобы ссылка вела на существующую строку: нельзя создать заказ для несуществующего покупателя и нельзя удалить покупателя, у которого есть заказы.</p>
+  <div class="note"><b>Как называть ключи</b>
+    <p>Первичный ключ — <code>id</code>. Внешний ключ — имя сущности в единственном числе плюс <code>_id</code>: <code>customer_id</code>, <code>unit_id</code>, <code>role_id</code>. Глядя на такое имя, сразу понятно, куда ведёт ссылка.</p>
+  </div>
+</section>
+
+<section class="card" id="links">
+  <h2>Три вида связей</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Связь</th><th>Пример из жизни</th><th>Пример на фабрике</th><th>Как сделать в базе</th></tr></thead>
+    <tbody>
+      <tr><td><b>Один к одному</b> (1:1)</td><td>Человек и его паспорт</td><td>Изделие и его спецификация (если у изделия ровно одна)</td><td>Внешний ключ с ограничением UNIQUE в одной из таблиц. Встречается редко.</td></tr>
+      <tr><td><b>Один ко многим</b> (1:M)</td><td>Мама и дети: у мамы много детей, у ребёнка одна мама</td><td>Покупатель и заказы. Единица измерения и материалы</td><td>Внешний ключ на стороне «многих»: в таблице заказов поле <code>customer_id</code>.</td></tr>
+      <tr><td><b>Многие ко многим</b> (M:M)</td><td>Студенты и предметы: студент изучает много предметов, предмет изучают много студентов</td><td>Изделия и материалы: в стол входит много материалов, опора входит во много изделий</td><td>Отдельная связующая таблица с двумя внешними ключами.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Почему M:M нельзя сделать одним полем</b>
+    <p>Попробуйте положить в таблицу изделий поле <code>material_id</code>. В нём поместится только один материал, а у стола их пять. Положить в таблицу материалов поле <code>product_id</code>? Тогда опора сможет входить только в одно изделие. Выход — третья таблица <code>specification_materials</code>, где каждая строка означает «в такое-то изделие входит такой-то материал в таком-то количестве». И очень важно: количество (норма) живёт именно здесь, потому что оно зависит от пары «изделие + материал» сразу.</p>
+  </div>
+</section>
+
+<section class="card" id="normal">
+  <h2>Нормальные формы на одном примере</h2>
+  <p class="prose">Нормализация — это наведение порядка в данных, чтобы каждый факт хранился ровно в одном месте. Зачем? Если телефон покупателя записан в каждом его заказе, то при смене номера придётся исправлять сто заказов, а забудете один — в базе окажется два разных телефона у одного человека. Это называют аномалией обновления.</p>
+  <p class="prose">Представим, что менеджер вёл заказы в Excel вот так:</p>
+  <div class="tw"><table class="mini">
+    <thead><tr><th>Номер</th><th>Дата</th><th>Покупатель</th><th>Телефон</th><th>Товары</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>22.04</td><td>ИП Томилин</td><td>+7928…</td><td class="badcell">Стол ×2, Табурет ×4</td></tr>
+      <tr><td>2</td><td>25.04</td><td>ИП Томилин</td><td class="badcell">+7905…</td><td>Стол ×1</td></tr>
+    </tbody>
+  </table></div>
+  <ol class="walk">
+    <li><b>Первая нормальная форма (1НФ): одна ячейка — одно значение.</b>
+      В ячейке «Товары» сразу два товара с количествами. Такую ячейку не посчитаешь запросом и не проверишь. Решение: каждый товар в отдельной строке. Делаем таблицу строк заказа: номер заказа, товар, количество.</li>
+    <li><b>Вторая нормальная форма (2НФ): всё зависит от всего ключа.</b>
+      Допустим, в таблице строк заказа ключ — пара (номер заказа, товар), и мы добавили туда поле «название товара». Но название зависит только от товара, номер заказа тут ни при чём. Это зависимость от части ключа. Решение: название живёт в таблице товаров, а в строке заказа только ссылка <code>product_id</code>.</li>
+    <li><b>Третья нормальная форма (3НФ): ничего не зависит от неключевых полей.</b>
+      В таблице заказов есть покупатель и его телефон. Телефон зависит от покупателя, а не от заказа. Поэтому у Томилина в двух заказах оказались разные телефоны. Решение: телефон хранится в таблице покупателей, а в заказе только <code>customer_id</code>.</li>
+  </ol>
+  <p class="prose">Итог: четыре аккуратные таблицы вместо одной кривой.</p>
+<pre><code>customers   (id, name, phone)
+products    (id, name, price)
+orders      (id, number, order_date, customer_id)
+order_items (id, order_id, product_id, quantity, price)</code></pre>
+  <div class="note"><b>Простой способ проверить 3НФ</b>
+    <p>Для каждого поля спросите: «Это свойство именно этой строки или чего-то, на что строка ссылается?» Телефон — свойство покупателя, а не заказа. Название — свойство товара, а не строки заказа. Если ответ «чего-то другого», поле надо унести в ту таблицу.</p>
+  </div>
+  <div class="note analogy"><b>А почему цена есть и в товаре, и в строке заказа?</b>
+    <p>Это не нарушение. В таблице товаров текущая цена по прайсу. В строке заказа цена, по которой продали в тот день. Завтра прайс поднимут, а старый заказ должен остаться на старую сумму. Это разные факты, просто называются одинаково.</p>
+  </div>
+</section>
+
+<section class="card" id="algo">
+  <h2>Алгоритм из 6 шагов на примере «Вершины»</h2>
+  <p class="prose">Теперь соберём всё вместе и пройдём путь от документов до схемы так, как это делают на экзамене. Документы «Вершины» есть на странице <a href="enterprise.html#docs">«Предприятие»</a>.</p>
+  <ol class="walk">
+    <li><b>Разберите файлы: справочник, документ или отчёт.</b>
+      Заказчики.json и Цены — справочники. Заказ покупателя, спецификация и заказ на производство — документы. Расчёт стоимости — отчёт: всё в нём вычисляется, таблицы не будет.</li>
+    <li><b>Шапка документа → таблица документа.</b>
+      Из шапки заказа покупателя: номер, дата, заказчик. Получаем <code>customer_orders(id, number, order_date, customer_id)</code>. Исполнителя («Вершина») не храним: он всегда один и тот же.</li>
+    <li><b>Строки документа → таблица строк.</b>
+      Строки заказа: товар, количество, цена, скидка. Получаем <code>customer_order_items(id, customer_order_id, product_id, quantity, price, discount_sum)</code>. Сумму не храним: она равна количество × цена − скидка. У спецификации две табличные части, поэтому две таблицы: <code>specification_materials</code> и <code>specification_operations</code>.</li>
+    <li><b>Повторяющиеся значения → справочники.</b>
+      Пройдитесь по всем столбцам и найдите значения, которые повторяются и пишутся текстом: «шт», «тыс. шт» → таблица <code>units</code>. «Поставщик», «Покупатель» → <code>counterparty_types</code>. Названия материалов и изделий → <code>nomenclature</code>. Операции → <code>operations</code>.</li>
+    <li><b>Расставьте связи.</b>
+      Для каждой пары таблиц спросите: «Один X — это сколько Y?» Один покупатель — много заказов (1:M, ключ <code>customer_id</code> в заказе). Одна спецификация — много строк материалов (1:M). Изделие и материалы — многие ко многим, и связующая таблица уже есть: это строки спецификации.</li>
+    <li><b>Проверьте нормальные формы и имена.</b>
+      Нет ли ячеек со списками? Нет ли в строках полей, которые принадлежат справочнику (название материала, телефон покупателя)? Все имена латиницей в snake_case?</li>
+  </ol>
+  <div class="note mistake"><b>Частые ошибки на экзамене</b>
+    <ul>
+      <li>Таблица <code>cost_calculation</code> под отчёт «Расчёт стоимости».</li>
+      <li>Одна таблица на весь документ: шапка и строки вперемешку, номер заказа повторяется в каждой строке вместе с датой и покупателем.</li>
+      <li>Норма расхода в таблице материалов. Тогда у опоры одна норма для всех изделий.</li>
+      <li>Нет связи между таблицами: поля есть, линий на диаграмме нет.</li>
+      <li>Русские имена таблиц или <code>CamelCase</code>.</li>
+      <li>Тип <code>integer</code> для id из JSON с ведущими нулями.</li>
+    </ul>
+  </div>
+  <h3>Где рисовать</h3>
+  <ul class="prose">
+    <li><b>draw.io</b> (diagrams.net): слева раздел «Entity Relation», перетаскиваете таблицы, соединяете линиями с «вороньей лапкой». Файл → Экспорт → PDF.</li>
+    <li><b>DBeaver</b>: если база уже создана, откройте схему <code>public</code> в дереве слева и перейдите на вкладку «ER-диаграмма». Диаграмма с ключами и связями построится сама, её можно сохранить картинкой и вставить в PDF. Так быстрее, но сначала нужно создать таблицы.</li>
+    <li><b>pgAdmin</b>: то же самое через правую кнопку по базе → ERD For Database.</li>
+  </ul>
+</section>
+
+<section class="card" id="naming">
+  <h2>Правила именования и проверка имён</h2>
+  <p class="prose">«Автотест» проверяет имена таблиц и полей. Правило: латиница в нижнем регистре, слова через подчёркивание (<code>snake_case</code>), без пробелов, не с цифры. Почему так строго? PostgreSQL приводит имена без кавычек к нижнему регистру, поэтому <code>CustomerOrders</code> превратится в <code>customerorders</code>, а с кавычками придётся писать <code>"CustomerOrders"</code> в каждом запросе. Кириллица и пробелы ломают инструменты и код. Единый стиль снимает эти проблемы.</p>
+  <div class="row">
+    <label class="f" style="flex:1">Имя таблицы или поля<input type="text" id="nmIn" placeholder="например, customer_orders" autocomplete="off"></label>
+  </div>
+  <div class="res" id="nmRes"></div>
+  <p class="small">Попробуйте: <code>Заказы</code>, <code>CustomerOrders</code>, <code>order date</code>, <code>1table</code>, <code>user</code>, <code>customerid</code>, <code>customer_id</code>.</p>
+</section>
+
+<section class="card" id="where">
+  <h2>Тренажёр: в какую таблицу положить поле?</h2>
+  <p class="prose">Для каждого поля спросите себя: чьё это свойство? Если ИНН принадлежит контрагенту, то и лежит он у контрагента, даже если в бумажном заказе напечатан рядом с номером заказа.</p>
+  <div class="tw"><table id="wtTable"><thead><tr><th>Поле</th><th>Таблица</th></tr></thead><tbody></tbody></table></div>
+  <div class="row"><button class="btn" id="wtCheck" type="button">Проверить</button></div>
+  <div class="res" id="wtRes"></div>
+</section>
+
+<section class="card" id="nf">
+  <h2>Квиз: нормальные формы</h2>
+  <p class="prose">После каждого ответа появится объяснение. Читайте его, даже если ответили правильно.</p>
+  <div id="quiz"></div>
+  <div class="row"><button class="btn" id="qzCheck" type="button">Проверить ответы</button></div>
+  <div class="res" id="qzRes"></div>
+</section>
+
+<section class="card" id="sample">
+  <h2>Эталонная ER «Вершины»</h2>
+  <p class="prose">Сначала нарисуйте свою в draw.io или в pgAdmin (ERD Tool) и экспортируйте в PDF. Потом сравните. Отличия допустимы, если схема в 3НФ и вы можете объяснить своё решение.</p>
+  <details id="erDetails"><summary>Показать эталонную схему</summary>
+    <div class="mermaid" id="erDiagram">
+erDiagram
+  counterparty_types ||--o{ counterparties : "тип"
+  counterparties ||--o{ customer_orders : "заказчик"
+  units ||--o{ nomenclature : "ед. изм."
+  nomenclature_types ||--o{ nomenclature : "вид"
+  nomenclature ||--o{ specifications : "изделие"
+  specifications ||--o{ specification_materials : "состав"
+  nomenclature ||--o{ specification_materials : "материал"
+  specifications ||--o{ specification_operations : "операции"
+  operations ||--o{ specification_operations : "операция"
+  customer_orders ||--o{ customer_order_items : "строки"
+  nomenclature ||--o{ customer_order_items : "товар"
+  roles ||--o{ users : "роль"
+  counterparty_types { int id PK
+    string name }
+  counterparties { string id PK
+    string name
+    string inn
+    string address
+    string phone
+    int counterparty_type_id FK }
+  units { int id PK
+    string name }
+  nomenclature_types { int id PK
+    string name }
+  nomenclature { int id PK
+    string code
+    string name
+    int unit_id FK
+    int nomenclature_type_id FK
+    decimal price }
+  operations { int id PK
+    string code
+    string name
+    decimal price }
+  specifications { int id PK
+    int product_id FK
+    string name }
+  specification_materials { int id PK
+    int specification_id FK
+    int material_id FK
+    decimal quantity }
+  specification_operations { int id PK
+    int specification_id FK
+    int operation_id FK
+    decimal time_norm
+    int quantity }
+  customer_orders { int id PK
+    int number
+    date order_date
+    string customer_id FK }
+  customer_order_items { int id PK
+    int customer_order_id FK
+    int product_id FK
+    decimal quantity
+    decimal price
+    decimal discount_sum }
+  roles { int id PK
+    string name }
+  users { int id PK
+    string login
+    string password
+    int role_id FK
+    bool is_blocked
+    int failed_attempts }
+    </div>
+    <p class="small">Заказ на производство (<code>production_orders</code> и его строки) строится так же, как заказ покупателя. Вопрос для самопроверки: почему цена есть и в <code>nomenclature</code>, и в <code>customer_order_items</code>? Ответ: в строке заказа хранится цена на момент продажи, она не должна меняться вместе с прайсом.</p>
+  </details>
+</section>
+
+<section class="card" id="cases">
+  <h2>Мини-кейсы на 15 минут</h2>
+  <p class="prose">Прочитайте документы и нарисуйте ER на бумаге за 15 минут. Потом сравните с решением.</p>
+  <div class="note"><b>Как подойти к незнакомому кейсу</b>
+    <ol>
+      <li>Найдите главное событие: что здесь «заказ»? В пекарне это заявка магазина, в автосервисе заказ-наряд.</li>
+      <li>Найдите «рецепт»: что описывает состав одного изделия или услуги? Технологическая карта, норматив работ.</li>
+      <li>Выпишите всех участников: кто заказывает, кто выполняет. Это справочники.</li>
+      <li>Дальше по алгоритму из 6 шагов. Предметная область другая, но схема почти всегда похожа на «Вершину».</li>
+    </ol>
+  </div>
+  <div class="grid">
+    <div class="box">
+      <h3>Пекарня «Колос»</h3>
+      <p><b>Технологическая карта «Батон нарезной»</b> на 1 шт: мука 0,35 кг, вода 0,2 л, дрожжи 0,008 кг, соль 0,006 кг. Операции: замес 0,1 ч, выпечка 0,5 ч.</p>
+      <p><b>Заявка магазина № 15 от 02.12.2026:</b> «Продукты у дома», ИНН 7701234567. Батон 40 шт по 48 ₽, Бородинский 25 шт по 62 ₽.</p>
+      <p><b>Прайс сырья:</b> мука 38 ₽/кг, дрожжи 420 ₽/кг, соль 18 ₽/кг, вода 0,05 ₽/л.</p>
+      <details><summary>Показать решение</summary>
+<pre><code>units(id, name)
+ingredients(id, name, unit_id, price)
+products(id, name, unit_id)
+recipes(id, product_id)
+recipe_ingredients(id, recipe_id, ingredient_id, quantity)
+operations(id, name)
+recipe_operations(id, recipe_id, operation_id, time_norm)
+stores(id, code, title, inn, city)
+store_orders(id, number, order_date, store_id)
+store_order_items(id, store_order_id, product_id, quantity, price)</code></pre>
+        <p>Сырьё на 40 батонов стоит 671,12 ₽.</p>
+      </details>
+    </div>
+    <div class="box">
+      <h3>Автосервис «Гайка»</h3>
+      <p><b>Заказ-наряд № 318 от 05.12.2026.</b> Клиент Петров И. И., тел. +79001112233. Автомобиль Lada Vesta, госномер А123ВС26. Мастер Сидоров К. Работы: замена масла 1 н/ч, замена фильтра 0,5 н/ч. Запчасти: масло 4 л по 650 ₽, фильтр 1 шт по 420 ₽.</p>
+      <p><b>Клиенты.json:</b> <code>{"id":"К-0001","fio":"Петров Иван Иванович","cars":"Lada Vesta А123ВС26"}</code></p>
+      <details><summary>Показать решение</summary>
+<pre><code>clients(id, code, last_name, first_name, patronymic, phone)
+cars(id, client_id, brand, model, plate_number, vin)
+employees(id, full_name, position)
+services(id, name, norm_hours)
+parts(id, name, unit_id, price)
+units(id, name)
+work_orders(id, number, order_date, car_id, master_id, hour_price)
+work_order_services(id, work_order_id, service_id, hours)
+work_order_parts(id, work_order_id, part_id, quantity, price)</code></pre>
+        <p>Ловушка: в JSON автомобиль записан строкой внутри клиента, это нарушение 1НФ. При нормо-часе 1 800 ₽ наряд стоит 5 720 ₽.</p>
+      </details>
+    </div>
+    <div class="box">
+      <h3>Швейный цех «Стежок»</h3>
+      <p><b>Спецификация «Куртка демисезонная»:</b> ткань плащевая 2,1 м, утеплитель 1,8 м, молния 70 см 1 шт, нитки 0,05 бобины.</p>
+      <p><b>Заказ ателье «Мода» № 7:</b> куртка 10 шт, размер 48, цвет синий.</p>
+      <details><summary>Показать решение</summary>
+<pre><code>units(id, name)
+materials(id, name, unit_id)
+products(id, name)
+specifications(id, product_id)
+specification_materials(id, specification_id, material_id, quantity)
+customers(id, name)
+orders(id, number, order_date, customer_id)
+order_items(id, order_id, product_id, size, color, quantity)</code></pre>
+        <p>Размеры и цвета можно вынести в справочники <code>sizes</code> и <code>colors</code>, если они повторяются.</p>
+      </details>
+    </div>
+  </div>
+</section>
+</main>
+<footer>Учебный сайт для подготовки к демоэкзамену. Все предприятия и данные в примерах вымышлены.</footer>
+<script src="assets/app.js"></script>
+<script>
+(function () {
+  // ---------- проверка имён
+  var reserved = ["user", "order", "group", "table", "select", "from", "where", "desc", "limit", "check"];
+  var inp = document.getElementById("nmIn"), out = document.getElementById("nmRes");
+  inp.addEventListener("input", function () {
+    var v = inp.value;
+    if (!v) { out.className = "res"; out.textContent = ""; return; }
+    var errs = [], warns = [];
+    if (/[а-яё]/i.test(v)) { errs.push("кириллица: используйте латиницу"); }
+    if (/\s/.test(v)) { errs.push("пробел: замените на _"); }
+    if (/[A-Z]/.test(v)) { errs.push("заглавные буквы: только нижний регистр"); }
+    if (/^[0-9_]/.test(v)) { errs.push("начинается с цифры или подчёркивания"); }
+    if (/[^A-Za-zА-Яа-яЁё0-9_\s]/.test(v)) { errs.push("недопустимые символы (дефис, точка, кавычки)"); }
+    if (/__/.test(v) || /_$/.test(v)) { warns.push("двойное или конечное подчёркивание выглядит как опечатка"); }
+    if (reserved.indexOf(v.toLowerCase()) >= 0) { warns.push("«" + v + "» — зарезервированное слово SQL, назовите во множественном числе"); }
+    if (/[a-z]id$/.test(v) && !/_id$/.test(v)) { warns.push("внешний ключ лучше называть через подчёркивание: …_id"); }
+    if (errs.length) { setRes(out, "bad", "Не пройдёт: " + errs.join("; ") + "."); }
+    else if (warns.length) { setRes(out, "warn", "Пройдёт, но: " + warns.join("; ") + "."); }
+    else { setRes(out, "ok", "Отличное имя."); }
+  });
+
+  // ---------- где поле
+  var tables = ["counterparties", "units", "nomenclature", "specification_materials", "customer_orders", "customer_order_items"];
+  var fields = [
+    ["ИНН контрагента", "counterparties"], ["Дата заказа покупателя", "customer_orders"],
+    ["Количество столов в заказе", "customer_order_items"], ["Норма расхода опор на 1 стол", "specification_materials"],
+    ["Название единицы «тыс. шт»", "units"], ["Цена стола в конкретном заказе", "customer_order_items"],
+    ["Текущая цена опоры по прайсу", "nomenclature"], ["Ссылка на заказчика", "customer_orders"],
+    ["Телефон контрагента", "counterparties"], ["Код номенклатуры ФР-00000009", "nomenclature"]
+  ];
+  var tb = document.querySelector("#wtTable tbody");
+  fields.forEach(function (f, i) {
+    tb.insertAdjacentHTML("beforeend", "<tr><td>" + f[0] + "</td><td><select id='wt" + i + "' aria-label='" + f[0] + "'><option>—</option>" +
+      tables.map(function (t) { return "<option>" + t + "</option>"; }).join("") + "</select></td></tr>");
+  });
+  document.getElementById("wtCheck").onclick = function () {
+    var good = 0;
+    fields.forEach(function (f, i) {
+      var s = document.getElementById("wt" + i), ok = s.value === f[1];
+      s.style.borderColor = ok ? "var(--ok)" : "var(--bad)"; if (ok) { good++; }
+    });
+    setRes(document.getElementById("wtRes"), good === fields.length ? "ok" : "bad",
+      good === fields.length ? "Всё верно!" : "Верно " + good + " из " + fields.length + ". Подсказка: норма расхода зависит и от изделия, и от материала одновременно.");
+  };
+
+  // ---------- квиз
+  var qs = [
+    { q: "Какая схема заказа находится в 3НФ?", a: [
+      "orders(id, date, customer_name, customer_phone, product1, qty1, product2, qty2)",
+      "orders(id, date, customer_id); order_items(order_id, product_id, quantity, product_name), ключ (order_id, product_id)",
+      "orders(id, date, customer_id, customer_phone); order_items(id, order_id, product_id, quantity)",
+      "customers(id, name, phone); products(id, name, unit_id, price); orders(id, date, customer_id); order_items(id, order_id, product_id, quantity, price)"],
+      c: 3, why: "Первая нарушает 1НФ (повторяющиеся группы). Во второй product_name зависит только от части ключа, это нарушение 2НФ. В третьей телефон зависит от клиента, а не от заказа, это нарушение 3НФ." },
+    { q: "В JSON у клиента поле \"cars\": \"Lada Vesta А123ВС26, Kia Rio В456ОР26\". Что нарушено?", a: ["1НФ", "2НФ", "3НФ", "Ничего"], c: 0,
+      why: "В одной ячейке несколько значений. Автомобили выносим в отдельную таблицу cars со ссылкой на клиента." },
+    { q: "Нужна ли отдельная таблица для документа «Расчёт стоимости»?", a: ["Да, как для любого документа", "Нет, это отчёт, его считает запрос", "Да, но без внешних ключей"], c: 1,
+      why: "Все числа расчёта получаются из спецификации, цен и заказа. Хранить их отдельно значит дублировать данные." },
+    { q: "Где хранить норму расхода материала на изделие?", a: ["В таблице материалов", "В таблице изделий", "В связующей таблице «спецификация — материал»"], c: 2,
+      why: "Норма зависит от пары «изделие + материал»: опор на стол 4, а на табурет может быть 3." },
+    { q: "id контрагента в JSON выглядит как \"000000001\". Какой тип выбрать?", a: ["integer", "varchar(9)", "numeric"], c: 1,
+      why: "В числовом типе ведущие нули пропадут, и при импорте связанных данных id не совпадут." }
+  ];
+  var box = document.getElementById("quiz");
+  qs.forEach(function (q, i) {
+    var html = "<fieldset style='border:1px solid var(--line);border-radius:8px;margin:0 0 12px;padding:10px 14px'><legend><b>" + (i + 1) + ". " + q.q + "</b></legend>";
+    q.a.forEach(function (a, j) {
+      html += "<label style='display:flex;gap:8px;margin:4px 0;cursor:pointer'><input type='radio' name='q" + i + "' value='" + j + "'> <span>" + a + "</span></label>";
+    });
+    html += "<div class='res' id='qr" + i + "'></div></fieldset>";
+    box.insertAdjacentHTML("beforeend", html);
+  });
+  document.getElementById("qzCheck").onclick = function () {
+    var good = 0;
+    qs.forEach(function (q, i) {
+      var sel = document.querySelector("input[name=q" + i + "]:checked"), r = document.getElementById("qr" + i);
+      if (!sel) { setRes(r, "warn", "Выберите ответ."); return; }
+      var ok = +sel.value === q.c; if (ok) { good++; }
+      setRes(r, ok ? "ok" : "bad", (ok ? "Верно. " : "Неверно. ") + q.why);
+    });
+    setRes(document.getElementById("qzRes"), good === qs.length ? "ok" : "warn", "Результат: " + good + " из " + qs.length + ".");
+  };
+})();
+</script>
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.esm.min.mjs";
+var dark = matchMedia("(prefers-color-scheme: dark)").matches;
+mermaid.initialize({ startOnLoad: false, theme: dark ? "dark" : "default" });
+var done = false;
+document.getElementById("erDetails").addEventListener("toggle", function (e) {
+  if (e.target.open && !done) { done = true; mermaid.run({ nodes: [document.getElementById("erDiagram")] }); }
+});
+</script>
+</body>
+</html>
